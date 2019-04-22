@@ -4,11 +4,10 @@ using PureMVC.Patterns.Command;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace GameClient.Controller
 {
-    public class RegisterCommand : SimpleCommand
+    class RegisterCommand : SimpleCommand
     {
         public override void Execute(INotification notification)
         {

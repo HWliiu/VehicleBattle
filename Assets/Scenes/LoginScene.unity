@@ -401,7 +401,7 @@ GameObject:
   - component: {fileID: 100313378}
   - component: {fileID: 100313377}
   m_Layer: 5
-  m_Name: ClearBtn
+  m_Name: ClearInputBtn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -666,7 +666,7 @@ GameObject:
   - component: {fileID: 217030077}
   - component: {fileID: 217030076}
   m_Layer: 5
-  m_Name: UsernameText
+  m_Name: UserName
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -908,7 +908,7 @@ GameObject:
   - component: {fileID: 488099884}
   - component: {fileID: 488099883}
   m_Layer: 5
-  m_Name: PasswordText
+  m_Name: Password
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1148,7 +1148,7 @@ GameObject:
   - component: {fileID: 655674279}
   - component: {fileID: 655674278}
   m_Layer: 5
-  m_Name: ConfirmPasswordText
+  m_Name: ConfirmPassword
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1514,7 +1514,7 @@ GameObject:
   - component: {fileID: 1168741972}
   - component: {fileID: 1168741971}
   m_Layer: 5
-  m_Name: UsernameInput
+  m_Name: UserNameInput
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2077,7 +2077,7 @@ GameObject:
   - component: {fileID: 1386582907}
   - component: {fileID: 1386582906}
   m_Layer: 5
-  m_Name: UsernameText
+  m_Name: UserName
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2354,7 +2354,7 @@ GameObject:
   - component: {fileID: 1497693886}
   - component: {fileID: 1497693885}
   m_Layer: 5
-  m_Name: PasswordInput
+  m_Name: RegisterPasswordInput
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2495,7 +2495,7 @@ GameObject:
   - component: {fileID: 1503021680}
   - component: {fileID: 1503021679}
   m_Layer: 5
-  m_Name: UsernameInput
+  m_Name: RegisterUserNameInput
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3523,20 +3523,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ConnStateText: {fileID: 29026742}
-  LoginPanel: {fileID: 1222358312}
-  UsernameInput: {fileID: 1168741971}
-  PasswordInput: {fileID: 1218000364}
-  LoginBtn: {fileID: 1986696781}
-  RegisterBtn: {fileID: 1708530387}
-  LoginTipsText: {fileID: 526265186}
-  RegisterPanel: {fileID: 235823775}
-  RegisterUsernameInput: {fileID: 1503021679}
-  RegisterPasswordInput: {fileID: 1497693885}
-  ConfirmPasswordInput: {fileID: 662486172}
-  ConfirmRegisterBtn: {fileID: 1486954048}
-  ClearBtn: {fileID: 100313377}
-  BackLoginBtn: {fileID: 52588200}
-  RegisterTipsText: {fileID: 437512828}
+  LoginPanel: {fileID: 1222358313}
+  RegisterPanel: {fileID: 235823776}
 --- !u!1 &2011369729
 GameObject:
   m_ObjectHideFlags: 0
@@ -3707,7 +3695,7 @@ GameObject:
   - component: {fileID: 2118348208}
   - component: {fileID: 2118348207}
   m_Layer: 5
-  m_Name: PasswordText
+  m_Name: Password
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

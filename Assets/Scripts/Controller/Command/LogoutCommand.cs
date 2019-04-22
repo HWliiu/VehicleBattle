@@ -2,20 +2,21 @@
 using PureMVC.Interfaces;
 using PureMVC.Patterns.Command;
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace GameClient.Controller
 {
-    class LoginCommand : SimpleCommand
+    class LogoutCommand : SimpleCommand
     {
-        //Command业务逻辑协调Model与View的逻辑
         public override void Execute(INotification notification)
         {
             base.Execute(notification);
             LoginProxy loginProxy = Facade.RetrieveProxy(nameof(LoginProxy)) as LoginProxy;
-            var tuple = notification.Body as Tuple<string, string>;
-            loginProxy.RequestLogin(tuple.Item1, tuple.Item2);
+            var userId = notification.Body as string;
+            loginProxy.RequestLogout(userId);
         }
     }
 }

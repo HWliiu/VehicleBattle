@@ -1,11 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using UnityEngine;
 
 namespace GameClient.Common
 {
-    public static class RegexMatch
+    static class RegexMatch
     {
         private static readonly string userNamePattern = @"^[\S+]{3,10}$";
         private static readonly string passwordPattern = @"^[0-9a-zA-z]{6,16}$";

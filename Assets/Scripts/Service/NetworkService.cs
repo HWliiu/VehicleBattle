@@ -81,6 +81,13 @@ namespace GameClient.Service
             //注意:Unity主线程拥有上下文任务调度器，可以让延续任务在主线程中执行
         }
 
+        public void Close()
+        {
+            // TODO: 资源清理
+            _poolSemaphore.Dispose();
+            _clientSocket.Close();
+        }
+
         private async Task ConnectServerAsync()
         {
             await _clientSocket.ConnectAsync(_serverIp, _serverPort).ConfigureAwait(false); //注意:Unity主线程拥有同步上下文,默认情况下await后的代码会切换到主线程中执行,配置ConfigureAwait(false)可以减少上下文切换
@@ -163,6 +170,7 @@ namespace GameClient.Service
             else
             {
                 // TODO: 错误处理
+                return;
             }
             //继续接收
             if (_clientSocket.ReceiveAsync(e) == false)
@@ -338,7 +346,7 @@ namespace GameClient.Service
         // to add to the pool
         public void Push(SocketAsyncEventArgs item)
         {
-            if (item == null) { throw new ArgumentNullException("Items added to a SocketAsyncEventArgsPool cannot be null"); }  // TODO: log4net
+            if (item == null) { throw new ArgumentNullException("Items added to a SocketAsyncEventArgsPool cannot be null"); }
             lock (m_pool)
             {
                 m_pool.Push(item);
@@ -362,7 +370,7 @@ namespace GameClient.Service
         }
 
     }
-    enum ConnectState
+    public enum ConnectState
     {
         Disconnect,
         Connecting,

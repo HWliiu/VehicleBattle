@@ -61,18 +61,29 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\AppFacade.cs" />
+    <Compile Include="Assets\Scripts\Common\AsyncLoadScene.cs" />
     <Compile Include="Assets\Scripts\Common\Util\RegexMatch.cs" />
+    <Compile Include="Assets\Scripts\Common\Util\UnityUtil.cs" />
+    <Compile Include="Assets\Scripts\Controller\Command\ChangePwdCommand.cs" />
     <Compile Include="Assets\Scripts\Controller\Command\LoginCommand.cs" />
+    <Compile Include="Assets\Scripts\Controller\Command\LogoutCommand.cs" />
     <Compile Include="Assets\Scripts\Controller\Command\RegisterCommand.cs" />
     <Compile Include="Assets\Scripts\Controller\Command\StartUpCommand.cs" />
     <Compile Include="Assets\Scripts\Main.cs" />
+    <Compile Include="Assets\Scripts\Model\LocalPlayerVO.cs" />
+    <Compile Include="Assets\Scripts\Model\NetPlayerVO.cs" />
+    <Compile Include="Assets\Scripts\Model\PlayerManager.cs" />
+    <Compile Include="Assets\Scripts\Model\PlayerVO.cs" />
     <Compile Include="Assets\Scripts\Model\Proxy\LoginProxy.cs" />
-    <Compile Include="Assets\Scripts\Model\UserVO.cs" />
+    <Compile Include="Assets\Scripts\Model\Proxy\MainMenuProxy.cs" />
+    <Compile Include="Assets\Scripts\Model\VehicleVO.cs" />
     <Compile Include="Assets\Scripts\NotifyConsts.cs" />
     <Compile Include="Assets\Scripts\Service\CommandDispatcher.cs" />
     <Compile Include="Assets\Scripts\Service\NetworkService.cs" />
     <Compile Include="Assets\Scripts\View\LoginView.cs" />
+    <Compile Include="Assets\Scripts\View\MainMenuView.cs" />
     <Compile Include="Assets\Scripts\View\Mediator\LoginMediator.cs" />
+    <Compile Include="Assets\Scripts\View\Mediator\MainMenuMediator.cs" />
     <None Include="Assets\Resources\Prefab\null.txt" />
     <None Include="Assets\Resources\Sprite\null.txt" />
     <Reference Include="Unity.TextMeshPro.Editor">

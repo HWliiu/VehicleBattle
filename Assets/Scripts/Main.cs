@@ -24,7 +24,7 @@ namespace GameClient
         private IEnumerator StartNetworkService()
         {
             yield return null;  //这里要等所有MonoBehaviour的Start执行完
-            var context = SynchronizationContext.Current ?? throw new Exception("SynchronizationContext is null");
+            var context = SynchronizationContext.Current ?? throw new ArgumentNullException(nameof(SynchronizationContext));
             //启动网络服务
             NetworkService.Instance.OnConnectStateChange += (connectState) => context.Post((state) => AppFacade.Instance.SendNotification(NotifyConsts.CommonNotification.UpdateConnState, connectState, nameof(String)), null);     //确保SendNotification的调用在主线程,因为要修改UI组件(SendNotification的第二个参数装箱了)
             NetworkService.Instance.Start();
@@ -37,8 +37,8 @@ namespace GameClient
         {
             //取消命令分发任务
             _cts.Cancel();
-            // TODO: 关闭网络服务
-
+            //关闭网络服务
+            NetworkService.Instance.Close();
         }
     }
 
