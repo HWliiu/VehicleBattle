@@ -15,8 +15,7 @@ namespace GameClient.Controller
         {
             base.Execute(notification);
             LoginProxy loginProxy = Facade.RetrieveProxy(nameof(LoginProxy)) as LoginProxy;
-            var userId = notification.Body as string;
-            loginProxy.RequestLogout(userId);
+            loginProxy.RequestLogout();
         }
     }
 }

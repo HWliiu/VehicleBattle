@@ -15,7 +15,6 @@ namespace GameClient
         {
             //启动整个PureMVC框架
             AppFacade.Instance.StartUp();
-            DontDestroyOnLoad(gameObject);  //确保只载入一次
             //开启网络服务
             StartCoroutine(StartNetworkService());
             _cts = new CancellationTokenSource();

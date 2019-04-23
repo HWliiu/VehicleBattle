@@ -15,13 +15,13 @@ namespace GameClient.Model
         public float Motility { get; set; }
         public float Defend { get; set; }
         public int MaxHealth { get; set; }
+        public int Price { get; set; }
+        public string Intro { get; set; }
         public int Health
         {
             get => _health;
             set => _health = _health < 0 ? 0 : _health > MaxHealth ? MaxHealth : value;
         }
-        public int Price { get; set; }
-        public string Intro { get; set; }
 
         // TODO: 添加位置信息,控制状态属性...
 

@@ -76,5 +76,13 @@ namespace GameClient
         {
 
         }
+        /// <summary>
+        /// 储存场景名称
+        /// </summary>
+        public static class SceneName
+        {
+            public const string MainMenuScene = nameof(MainMenuScene);
+            public const string LoginScene = nameof(LoginScene);
+        }
     }
 }

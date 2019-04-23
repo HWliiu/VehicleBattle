@@ -11,7 +11,6 @@ namespace GameClient.Model
     class LoginProxy : Proxy
     {
         //对数据模型的操作，不论是对于客户端还是对于服务端，后续的添加和修改接口只在Proxy中完成
-        private LocalPlayerVO _localPlayer;
         public LoginProxy(string proxyName, object data = null) : base(proxyName, data)
         {
         }
@@ -116,7 +115,7 @@ namespace GameClient.Model
             }
         }
 
-        public void RequestLogout(string userId)
+        public void RequestLogout()
         {
             JObject o = new JObject
             {
@@ -124,8 +123,8 @@ namespace GameClient.Model
                 {
                     "Paras", new JObject
                     {
-                        { "UserId",userId},
-                        { "Token",_localPlayer.Token}
+                        { "UserId",PlayerManager.Instance.LocalPlayer.UserID },
+                        { "Token",PlayerManager.Instance.LocalPlayer.Token }
                     }
                 }
             };
@@ -153,7 +152,6 @@ namespace GameClient.Model
         public override void OnRegister()
         {
             base.OnRegister();
-            _localPlayer = PlayerManager.Instance.LocalPlayer;
         }
 
         public override void OnRemove()

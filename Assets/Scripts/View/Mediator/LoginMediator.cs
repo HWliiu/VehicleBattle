@@ -78,10 +78,10 @@ namespace GameClient.View
             if (result)
             {
                 _viewComponent.LoginTipsText.text = info;
-                async Task subsequentHandle()   //c#7本地函数
+                async Task subsequentHandle()
                 {
                     await Task.Delay(500);
-                    UnityUtil.LoadScene("MainMenuScene");
+                    UnityUtil.LoadScene(NotifyConsts.SceneName.MainMenuScene);
                 }
                 _ = subsequentHandle();
             }

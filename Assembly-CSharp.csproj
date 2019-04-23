@@ -63,7 +63,9 @@
     <Compile Include="Assets\Scripts\AppFacade.cs" />
     <Compile Include="Assets\Scripts\Common\AsyncLoadScene.cs" />
     <Compile Include="Assets\Scripts\Common\Util\RegexMatch.cs" />
+    <Compile Include="Assets\Scripts\Common\Util\Singleton.cs" />
     <Compile Include="Assets\Scripts\Common\Util\UnityUtil.cs" />
+    <Compile Include="Assets\Scripts\Common\VehicleItem.cs" />
     <Compile Include="Assets\Scripts\Controller\Command\ChangePwdCommand.cs" />
     <Compile Include="Assets\Scripts\Controller\Command\LoginCommand.cs" />
     <Compile Include="Assets\Scripts\Controller\Command\LogoutCommand.cs" />
@@ -84,7 +86,6 @@
     <Compile Include="Assets\Scripts\View\MainMenuView.cs" />
     <Compile Include="Assets\Scripts\View\Mediator\LoginMediator.cs" />
     <Compile Include="Assets\Scripts\View\Mediator\MainMenuMediator.cs" />
-    <None Include="Assets\Resources\Prefab\null.txt" />
     <None Include="Assets\Resources\Sprite\null.txt" />
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>C:/Users/plays/source/repos/VehicleBattle/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>

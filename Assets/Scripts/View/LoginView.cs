@@ -15,13 +15,14 @@ namespace GameClient.View
         public RectTransform LoginPanel;
         public RectTransform RegisterPanel;
 
-        //LoginPanel组件
+        #region LoginPanel组件
         public InputField UserNameInput { get; set; }
         public InputField PasswordInput { get; set; }
         public Button LoginBtn { get; set; }
         public Button RegisterBtn { get; set; }
         public Text LoginTipsText { get; set; }
-        //RegisterPanel组件
+        #endregion
+        #region RegisterPanel组件
         public InputField RegisterUserNameInput { get; set; }
         public InputField RegisterPasswordInput { get; set; }
         public InputField ConfirmPasswordInput { get; set; }
@@ -29,10 +30,12 @@ namespace GameClient.View
         public Button ClearInputBtn { get; set; }
         public Button BackLoginBtn { get; set; }
         public Text RegisterTipsText { get; set; }
+        #endregion
 
         //ViewComponent只负责UI的绘制，而其他事情，包括事件的绑定统统交给Mediator来做
         private void Start()    //所有的Mediator以及非全局的Command,Proxy在Start()时注册,OnDestroy()时移除
         {
+            Singleton<Main>.GetInstance();
             InitComponent();
 
             AppFacade.Instance.RegisterMediator(new LoginMediator(nameof(LoginView), this));

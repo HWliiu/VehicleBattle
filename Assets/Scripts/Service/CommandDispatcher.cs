@@ -46,6 +46,9 @@ namespace GameClient.Service
                             case NotifyConsts.LoginNotification.RegisterResult:
                                 context.Post((obj) => (_appFacade.RetrieveProxy(nameof(LoginProxy)) as LoginProxy).RegisterResult(obj as JObject), o);
                                 break;
+                            case NotifyConsts.MainMenuNotification.ChangePasswordResult:
+                                context.Post((obj) => (_appFacade.RetrieveProxy(nameof(MainMenuProxy)) as MainMenuProxy).ChangePasswordResult(obj as JObject), o);
+                                break;
                             default:
                                 break;
                         }

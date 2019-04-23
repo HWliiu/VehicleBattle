@@ -51,6 +51,17 @@ namespace GameClient.Model
             {
                 throw new ArgumentNullException(nameof(jsonData));
             }
+
+            string result = (string)jsonData.SelectToken("Paras.Result");
+            string info = (string)jsonData.SelectToken("Paras.Info");
+            if (result == NotifyConsts.CommonNotification.Succeed)
+            {
+                SendNotification(NotifyConsts.MainMenuNotification.ChangePasswordResult, Tuple.Create(true, info), nameof(Tuple<bool, string>));
+            }
+            else
+            {
+                SendNotification(NotifyConsts.MainMenuNotification.ChangePasswordResult, Tuple.Create(false, info), nameof(Tuple<bool, string>));
+            }
         }
     }
 }

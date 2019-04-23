@@ -25,7 +25,7 @@ namespace GameClient.Service
 
         public RecvBufQueue RecvBufQueue { get => _recvBufQueue; }
 
-        public event Action<ConnectState> OnConnectStateChange; //这个函数到类外注册，减少依赖
+        public event Action<ConnectState> OnConnectStateChange; //这个事件到类外注册
         public ConnectState ConnectState
         {
             get => _connectState;

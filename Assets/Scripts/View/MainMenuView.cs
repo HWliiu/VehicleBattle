@@ -12,45 +12,56 @@ namespace GameClient.View
     public class MainMenuView : MonoBehaviour
     {
         //只需要在编辑器里拖少数几个顶层对象即可,剩下的引用让代码去找
-        public Text ConnStateText;
-        public Button UserInfoBtn;
-        public Button GarageBtn;
-        public Button StoreBtn;
-        public Button SettingBtn;
-        public Button StartGameBtn;
-        public RawImage UIMask;
+        public RectTransform MainMenuPanel;
         public RectTransform BriefInfoPanel;
-        public RectTransform UserInfoPanel;
+        public RectTransform PreviewPanel;
         public RectTransform VehicleParaPanel;
+        public RectTransform UserInfoPanel;
         public RectTransform ChangePasswordPanel;
-        //BriefInfoPanel组件
-        public Text LevelText { get; set; }
-        public Text ExperienceText { get; set; }
-        public Text MoneyText { get; set; }
-        //VehicleParaPanel组件
-        public Text VehicleNameText { get; set; }
-        public Slider[] VehicleParaSliders { get; set; }
-        //UserInfoPanel组件
-        public Text UserIdText { get; set; }
-        public Text UserNameText { get; set; }
-        public Text UserExperienceText { get; set; }
-        public Text UserMoneyText { get; set; }
-        public Text UserCurVehicleText { get; set; }
-        public Text UserPossessVehicleText { get; set; }
-        public Text UserRegisterTimeText { get; set; }
-        public Text UserLoginTimeText { get; set; }
-        public Button ChangePasswordBtn { get; set; }
-        public Button LogoutBtn { get; set; }
-        public Button ExitGameBtn { get; set; }
-        public Button BackMainMenuBtn { get; set; }
-        //ChangePasswordPanel组件
-        public InputField OldPasswordInput { get; set; }
-        public InputField NewPasswordInput { get; set; }
-        public InputField ConfirmPasswordInput { get; set; }
-        public Button ConfirmChangeBtn { get; set; }
-        public Button ClearInputBtn { get; set; }
-        public Button BackUserInfoBtn { get; set; }
-        public Text ChangePasswordTipsText { get; set; }
+        public RectTransform StorePanel;
+        public RectTransform GaragePanel;
+        public RectTransform SettingPanel;
+        public RectTransform DialogPanel;
+        #region MainMenuPanel组件
+        public Text MM_ConnStateText { get; set; }
+        public Button MM_UserInfoBtn { get; set; }
+        public Button MM_GarageBtn { get; set; }
+        public Button MM_StoreBtn { get; set; }
+        public Button MM_SettingBtn { get; set; }
+        public Button MM_StartGameBtn { get; set; }
+        #endregion
+        #region BriefInfoPanel组件
+        public Text BI_LevelText { get; set; }
+        public Text BI_ExperienceText { get; set; }
+        public Text BI_MoneyText { get; set; }
+        #endregion
+        #region VehicleParaPanel组件
+        public Text VP_VehicleNameText { get; set; }
+        public Slider[] VP_VehicleParaSliders { get; set; }
+        #endregion
+        #region UserInfoPanel组件
+        public Text UI_UserIdText { get; set; }
+        public Text UI_UserNameText { get; set; }
+        public Text UI_UserExperienceText { get; set; }
+        public Text UI_UserMoneyText { get; set; }
+        public Text UI_UserCurVehicleText { get; set; }
+        public Text UI_UserPossessVehicleText { get; set; }
+        public Text UI_UserRegisterTimeText { get; set; }
+        public Text UI_UserLoginTimeText { get; set; }
+        public Button UI_ChangePasswordBtn { get; set; }
+        public Button UI_LogoutBtn { get; set; }
+        public Button UI_ExitGameBtn { get; set; }
+        public Button UI_BackMainMenuBtn { get; set; }
+        #endregion
+        #region ChangePasswordPanel组件
+        public InputField CP_OldPasswordInput { get; set; }
+        public InputField CP_NewPasswordInput { get; set; }
+        public InputField CP_ConfirmPasswordInput { get; set; }
+        public Button CP_ConfirmChangeBtn { get; set; }
+        public Button CP_ClearInputBtn { get; set; }
+        public Button CP_BackUserInfoBtn { get; set; }
+        public Text CP_ChangePasswordTipsText { get; set; }
+        #endregion
 
         // Start is called before the first frame update
         void Start()
@@ -61,51 +72,59 @@ namespace GameClient.View
             AppFacade.Instance.RegisterProxy(new MainMenuProxy(nameof(MainMenuProxy), null));
 
             //UserInfoPanel相关
-            UserInfoBtn.onClick.AddListener(OnUserInfoBtn);
-            BackMainMenuBtn.onClick.AddListener(OnBackMainMenuBtn);
-            ExitGameBtn.onClick.AddListener(OnExitGameBtn);
+            MM_UserInfoBtn.onClick.AddListener(OnUserInfoBtn);
+            UI_BackMainMenuBtn.onClick.AddListener(OnBackMainMenuBtn);
+            UI_ExitGameBtn.onClick.AddListener(OnExitGameBtn);
             //ChangePasswordPanel相关
-            ChangePasswordBtn.onClick.AddListener(OnChangePasswordBtn);
-            ClearInputBtn.onClick.AddListener(OnClearInputBtn);
-            BackUserInfoBtn.onClick.AddListener(OnBackUserInfoBtn);
-            //MainMenu相关
-            GarageBtn.onClick.AddListener(OnGarageBtn);
-            StoreBtn.onClick.AddListener(OnStoreBtn);
-            SettingBtn.onClick.AddListener(OnSettingBtn);
-            StartGameBtn.onClick.AddListener(OnStartGameBtn);
+            UI_ChangePasswordBtn.onClick.AddListener(OnChangePasswordBtn);
+            CP_ClearInputBtn.onClick.AddListener(OnClearInputBtn);
+            CP_BackUserInfoBtn.onClick.AddListener(OnBackUserInfoBtn);
+            //MainMenuPanel相关
+            MM_GarageBtn.onClick.AddListener(OnGarageBtn);
+            MM_StoreBtn.onClick.AddListener(OnStoreBtn);
+            MM_SettingBtn.onClick.AddListener(OnSettingBtn);
+            MM_StartGameBtn.onClick.AddListener(OnStartGameBtn);
         }
 
         void InitComponent()
         {
-            //初始化BriefInfoPanel组件
-            LevelText = UnityUtil.FindChild<Text>(BriefInfoPanel.transform, nameof(LevelText)) ?? throw new ArgumentNullException(nameof(LevelText));   //递归查找给定名字的物体组件,一定要保证子物体下没有重名的该物体,还要保证属性的名称与场景中的一致
-            ExperienceText = UnityUtil.FindChild<Text>(BriefInfoPanel.transform, nameof(ExperienceText)) ?? throw new ArgumentNullException(nameof(ExperienceText));
-            MoneyText = UnityUtil.FindChild<Text>(BriefInfoPanel.transform, nameof(MoneyText)) ?? throw new ArgumentNullException(nameof(MoneyText));
-            //初始化VehicleParaPanel组件
-            VehicleNameText = UnityUtil.FindChild<Text>(VehicleParaPanel.transform, nameof(VehicleNameText)) ?? throw new ArgumentNullException(nameof(VehicleNameText));
-            VehicleParaSliders = VehicleParaPanel.gameObject.GetComponentsInChildren<Slider>() ?? throw new ArgumentNullException(nameof(VehicleParaSliders));
-            //初始化UserInfoPanel组件
-            UserIdText = UnityUtil.FindChild<Text>(UserInfoPanel.transform, nameof(UserIdText)) ?? throw new ArgumentNullException(nameof(UserIdText));
-            UserNameText = UnityUtil.FindChild<Text>(UserInfoPanel.transform, nameof(UserNameText)) ?? throw new ArgumentNullException(nameof(UserNameText));
-            UserExperienceText = UnityUtil.FindChild<Text>(UserInfoPanel.transform, nameof(UserExperienceText)) ?? throw new ArgumentNullException(nameof(UserExperienceText));
-            UserMoneyText = UnityUtil.FindChild<Text>(UserInfoPanel.transform, nameof(UserMoneyText)) ?? throw new ArgumentNullException(nameof(UserMoneyText));
-            UserCurVehicleText = UnityUtil.FindChild<Text>(UserInfoPanel.transform, nameof(UserCurVehicleText)) ?? throw new ArgumentNullException(nameof(UserCurVehicleText));
-            UserPossessVehicleText = UnityUtil.FindChild<Text>(UserInfoPanel.transform, nameof(UserPossessVehicleText)) ?? throw new ArgumentNullException(nameof(UserPossessVehicleText));
-            UserRegisterTimeText = UnityUtil.FindChild<Text>(UserInfoPanel.transform, nameof(UserRegisterTimeText)) ?? throw new ArgumentNullException(nameof(UserRegisterTimeText));
-            UserLoginTimeText = UnityUtil.FindChild<Text>(UserInfoPanel.transform, nameof(UserLoginTimeText)) ?? throw new ArgumentNullException(nameof(UserLoginTimeText));
-            ChangePasswordBtn = UnityUtil.FindChild<Button>(UserInfoPanel.transform, nameof(ChangePasswordBtn)) ?? throw new ArgumentNullException(nameof(ChangePasswordBtn));
-            LogoutBtn = UnityUtil.FindChild<Button>(UserInfoPanel.transform, nameof(LogoutBtn)) ?? throw new ArgumentNullException(nameof(LogoutBtn));
-            ExitGameBtn = UnityUtil.FindChild<Button>(UserInfoPanel.transform, nameof(ExitGameBtn)) ?? throw new ArgumentNullException(nameof(ExitGameBtn));
-            BackMainMenuBtn = UnityUtil.FindChild<Button>(UserInfoPanel.transform, nameof(BackMainMenuBtn)) ?? throw new ArgumentNullException(nameof(BackMainMenuBtn));
-            //初始化ChangePasswordPanel组件
-            OldPasswordInput = UnityUtil.FindChild<InputField>(ChangePasswordPanel.transform, nameof(OldPasswordInput)) ?? throw new ArgumentNullException(nameof(OldPasswordInput));
-            NewPasswordInput = UnityUtil.FindChild<InputField>(ChangePasswordPanel.transform, nameof(NewPasswordInput)) ?? throw new ArgumentNullException(nameof(NewPasswordInput));
-            ConfirmPasswordInput = UnityUtil.FindChild<InputField>(ChangePasswordPanel.transform, nameof(ConfirmPasswordInput)) ?? throw new ArgumentNullException(nameof(ConfirmPasswordInput));
-            ConfirmChangeBtn = UnityUtil.FindChild<Button>(ChangePasswordPanel.transform, nameof(ConfirmChangeBtn)) ?? throw new ArgumentNullException(nameof(ConfirmChangeBtn));
-            ClearInputBtn = UnityUtil.FindChild<Button>(ChangePasswordPanel.transform, nameof(ClearInputBtn)) ?? throw new ArgumentNullException(nameof(ClearInputBtn));
-            BackUserInfoBtn = UnityUtil.FindChild<Button>(ChangePasswordPanel.transform, nameof(BackUserInfoBtn)) ?? throw new ArgumentNullException(nameof(BackUserInfoBtn));
-            ChangePasswordTipsText = UnityUtil.FindChild<Text>(ChangePasswordPanel.transform, nameof(ChangePasswordTipsText)) ?? throw new ArgumentNullException(nameof(ChangePasswordTipsText));
+            //递归查找给定名字的物体组件,一定要保证子物体下没有重名的该物体,还要保证属性的名称与场景中的一致
+            //初始化MainMenuPanel组件
 
+            //初始化BriefInfoPanel组件
+            BI_LevelText = UnityUtil.FindChild<Text>(BriefInfoPanel.transform, nameof(BI_LevelText)) ?? throw new ArgumentNullException(nameof(BI_LevelText));
+            BI_ExperienceText = UnityUtil.FindChild<Text>(BriefInfoPanel.transform, nameof(BI_ExperienceText)) ?? throw new ArgumentNullException(nameof(BI_ExperienceText));
+            BI_MoneyText = UnityUtil.FindChild<Text>(BriefInfoPanel.transform, nameof(BI_MoneyText)) ?? throw new ArgumentNullException(nameof(BI_MoneyText));
+            //初始化PreviewPanel组件
+
+            //初始化VehicleParaPanel组件
+            VP_VehicleNameText = UnityUtil.FindChild<Text>(VehicleParaPanel.transform, nameof(VP_VehicleNameText)) ?? throw new ArgumentNullException(nameof(VP_VehicleNameText));
+            VP_VehicleParaSliders = VehicleParaPanel.gameObject.GetComponentsInChildren<Slider>() ?? throw new ArgumentNullException(nameof(VP_VehicleParaSliders));
+            //初始化UserInfoPanel组件
+            UI_UserIdText = UnityUtil.FindChild<Text>(UserInfoPanel.transform, nameof(UI_UserIdText)) ?? throw new ArgumentNullException(nameof(UI_UserIdText));
+            UI_UserNameText = UnityUtil.FindChild<Text>(UserInfoPanel.transform, nameof(UI_UserNameText)) ?? throw new ArgumentNullException(nameof(UI_UserNameText));
+            UI_UserExperienceText = UnityUtil.FindChild<Text>(UserInfoPanel.transform, nameof(UI_UserExperienceText)) ?? throw new ArgumentNullException(nameof(UI_UserExperienceText));
+            UI_UserMoneyText = UnityUtil.FindChild<Text>(UserInfoPanel.transform, nameof(UI_UserMoneyText)) ?? throw new ArgumentNullException(nameof(UI_UserMoneyText));
+            UI_UserCurVehicleText = UnityUtil.FindChild<Text>(UserInfoPanel.transform, nameof(UI_UserCurVehicleText)) ?? throw new ArgumentNullException(nameof(UI_UserCurVehicleText));
+            UI_UserPossessVehicleText = UnityUtil.FindChild<Text>(UserInfoPanel.transform, nameof(UI_UserPossessVehicleText)) ?? throw new ArgumentNullException(nameof(UI_UserPossessVehicleText));
+            UI_UserRegisterTimeText = UnityUtil.FindChild<Text>(UserInfoPanel.transform, nameof(UI_UserRegisterTimeText)) ?? throw new ArgumentNullException(nameof(UI_UserRegisterTimeText));
+            UI_UserLoginTimeText = UnityUtil.FindChild<Text>(UserInfoPanel.transform, nameof(UI_UserLoginTimeText)) ?? throw new ArgumentNullException(nameof(UI_UserLoginTimeText));
+            UI_ChangePasswordBtn = UnityUtil.FindChild<Button>(UserInfoPanel.transform, nameof(UI_ChangePasswordBtn)) ?? throw new ArgumentNullException(nameof(UI_ChangePasswordBtn));
+            UI_LogoutBtn = UnityUtil.FindChild<Button>(UserInfoPanel.transform, nameof(UI_LogoutBtn)) ?? throw new ArgumentNullException(nameof(UI_LogoutBtn));
+            UI_ExitGameBtn = UnityUtil.FindChild<Button>(UserInfoPanel.transform, nameof(UI_ExitGameBtn)) ?? throw new ArgumentNullException(nameof(UI_ExitGameBtn));
+            UI_BackMainMenuBtn = UnityUtil.FindChild<Button>(UserInfoPanel.transform, nameof(UI_BackMainMenuBtn)) ?? throw new ArgumentNullException(nameof(UI_BackMainMenuBtn));
+            //初始化ChangePasswordPanel组件
+            CP_OldPasswordInput = UnityUtil.FindChild<InputField>(ChangePasswordPanel.transform, nameof(CP_OldPasswordInput)) ?? throw new ArgumentNullException(nameof(CP_OldPasswordInput));
+            CP_NewPasswordInput = UnityUtil.FindChild<InputField>(ChangePasswordPanel.transform, nameof(CP_NewPasswordInput)) ?? throw new ArgumentNullException(nameof(CP_NewPasswordInput));
+            CP_ConfirmPasswordInput = UnityUtil.FindChild<InputField>(ChangePasswordPanel.transform, nameof(CP_ConfirmPasswordInput)) ?? throw new ArgumentNullException(nameof(CP_ConfirmPasswordInput));
+            CP_ConfirmChangeBtn = UnityUtil.FindChild<Button>(ChangePasswordPanel.transform, nameof(CP_ConfirmChangeBtn)) ?? throw new ArgumentNullException(nameof(CP_ConfirmChangeBtn));
+            CP_ClearInputBtn = UnityUtil.FindChild<Button>(ChangePasswordPanel.transform, nameof(CP_ClearInputBtn)) ?? throw new ArgumentNullException(nameof(CP_ClearInputBtn));
+            CP_BackUserInfoBtn = UnityUtil.FindChild<Button>(ChangePasswordPanel.transform, nameof(CP_BackUserInfoBtn)) ?? throw new ArgumentNullException(nameof(CP_BackUserInfoBtn));
+            CP_ChangePasswordTipsText = UnityUtil.FindChild<Text>(ChangePasswordPanel.transform, nameof(CP_ChangePasswordTipsText)) ?? throw new ArgumentNullException(nameof(CP_ChangePasswordTipsText));
+            //初始化StorePanel组件
+            //初始化GaragePanel组件
+            //初始化SettingPanel组件
+            //初始化DialogPanel组件
         }
 
         // Update is called once per frame
@@ -122,24 +141,20 @@ namespace GameClient.View
 
         }
 
-        private void OnUserInfoBtn()
-        {
-            UserInfoPanel.gameObject.SetActive(true);
-            UIMask.gameObject.SetActive(true);
-        }
+        private void OnUserInfoBtn() => UserInfoPanel.gameObject.SetActive(true);
 
-        private void OnBackMainMenuBtn()
-        {
-            UserInfoPanel.gameObject.SetActive(false);
-            UIMask.gameObject.SetActive(false);
-        }
+        private void OnBackMainMenuBtn() => UserInfoPanel.gameObject.SetActive(false);
 
         private void OnExitGameBtn()
         {
-            //退出程序
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
         }
         private void OnChangePasswordBtn() => ChangePasswordPanel.gameObject.SetActive(true);
-        private void OnClearInputBtn() => (OldPasswordInput.text, NewPasswordInput.text, ConfirmPasswordInput.text, ChangePasswordTipsText.text) = ("", "", "", "");
+        private void OnClearInputBtn() => (CP_OldPasswordInput.text, CP_NewPasswordInput.text, CP_ConfirmPasswordInput.text, CP_ChangePasswordTipsText.text) = ("", "", "", "");
         private void OnBackUserInfoBtn()
         {
             OnClearInputBtn();
