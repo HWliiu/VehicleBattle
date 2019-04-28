@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GameClient.Model
 {
-    class LocalPlayerVO : PlayerVO
+    public class LocalPlayerVO : PlayerVO
     {
         public readonly string Token;
         private int money;
@@ -22,7 +22,7 @@ namespace GameClient.Model
         {
             (Token, Experience, Money, RegisterTime, LoginTime, VehicleList) = (token ?? throw new ArgumentNullException(nameof(token)), experience, money, registerTime, loginTime, vehicleList ?? throw new ArgumentNullException(nameof(vehicleList)));
         }
-
+        public VehicleVO FindVehicle(string vehicleId) => (from r in VehicleList where r.VehicleID == vehicleId select r).First();
         public void Deconstruct(out string token, out string userID, out string userName) => (token, userID, userName) = (Token, UserID, UserName);
     }
 }

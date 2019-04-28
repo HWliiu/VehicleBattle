@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GameClient.Model
 {
-    class VehicleVO
+    public class VehicleVO
     {
         public string VehicleID { get; set; }
         public string VehicleName { get; set; }
@@ -40,8 +40,12 @@ namespace GameClient.Model
             Price = price;
             Intro = intro ?? throw new ArgumentNullException(nameof(intro));
         }
+        public void Deconstruct(out string id, out string name, out string type, out float attack, out float motility, out float defend, out int maxHealth, out int price, out string intro)
+        {
+            (id, name, type, attack, motility, defend, maxHealth, price, intro) = (VehicleID, VehicleName, VehicleType.ToString(), Attack, Motility, Defend, MaxHealth, Price, Intro);
+        }
     }
-    enum VehicleType
+    public enum VehicleType
     {
         Tank,
         Panzer

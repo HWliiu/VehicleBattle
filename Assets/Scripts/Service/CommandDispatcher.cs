@@ -33,7 +33,7 @@ namespace GameClient.Service
                         JObject o = JObject.Parse(msg);
                         string command = (string)o.SelectToken("Command");
                         o.Property("Command").Remove();
-                        // TODO: 有空再来改这一块(可以改成使用反射来找到函数)
+                        // TODO: 有空再来改这一块(使用反射+特性)
                         switch (command)
                         {
                             //封送回主线程执行
@@ -48,6 +48,15 @@ namespace GameClient.Service
                                 break;
                             case NotifyConsts.MainMenuNotification.ChangePasswordResult:
                                 context.Post((obj) => (_appFacade.RetrieveProxy(nameof(MainMenuProxy)) as MainMenuProxy).ChangePasswordResult(obj as JObject), o);
+                                break;
+                            case NotifyConsts.StoreNotification.StoreItemListResult:
+                                context.Post((obj) => (_appFacade.RetrieveProxy(nameof(StoreProxy)) as StoreProxy).StoreItemListResult(obj as JObject), o);
+                                break;
+                            case NotifyConsts.StoreNotification.PurchaseItemResult:
+                                context.Post((obj) => (_appFacade.RetrieveProxy(nameof(StoreProxy)) as StoreProxy).PurchaseItemResult(obj as JObject), o);
+                                break;
+                            case NotifyConsts.GarageNotification.ChangeVehicleResult:
+                                context.Post((obj) => (_appFacade.RetrieveProxy(nameof(GarageProxy)) as GarageProxy).ChangeVehicleResult(obj as JObject), o);
                                 break;
                             default:
                                 break;

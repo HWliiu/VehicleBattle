@@ -36,10 +36,10 @@ namespace GameClient.Model
                 {
                     "Paras", new JObject
                     {
-                        { "UserId",_localPlayer.UserID},
-                        { "Token",_localPlayer.Token},
-                        { "OldPassword",oldPassword},
-                        { "NewPassword",newPassword}
+                        { "UserId",_localPlayer.UserID },
+                        { "Token",_localPlayer.Token },
+                        { "OldPassword",oldPassword },
+                        { "NewPassword",newPassword }
                     }
                 }
             };

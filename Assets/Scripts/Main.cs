@@ -25,7 +25,7 @@ namespace GameClient
             yield return null;  //这里要等所有MonoBehaviour的Start执行完
             var context = SynchronizationContext.Current ?? throw new ArgumentNullException(nameof(SynchronizationContext));
             //启动网络服务
-            NetworkService.Instance.OnConnectStateChange += (connectState) => context.Post((state) => AppFacade.Instance.SendNotification(NotifyConsts.CommonNotification.UpdateConnState, connectState, nameof(String)), null);     //确保SendNotification的调用在主线程,因为要修改UI组件(SendNotification的第二个参数装箱了)
+            NetworkService.Instance.OnConnectStateChange += (connectState) => context.Post((state) => AppFacade.Instance.SendNotification(NotifyConsts.CommonNotification.UpdateConnState, connectState, nameof(String)), null);     //确保SendNotification的调用在主线程
             NetworkService.Instance.Start();
             yield return null;
             //单独开一个线程分发命令

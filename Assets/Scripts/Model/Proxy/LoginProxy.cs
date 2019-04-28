@@ -22,8 +22,8 @@ namespace GameClient.Model
                 {
                     "Paras", new JObject
                     {
-                        { "UserName",username},
-                        { "Password",password}
+                        { "UserName",username },
+                        { "Password",password }
                     }
                 }
             };
@@ -88,8 +88,8 @@ namespace GameClient.Model
                 {
                     "Paras", new JObject
                     {
-                        { "UserName",username},
-                        { "Password",password}
+                        { "UserName",username },
+                        { "Password",password }
                     }
                 }
             };

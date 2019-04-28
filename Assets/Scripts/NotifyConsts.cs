@@ -45,7 +45,6 @@ namespace GameClient
             public const string RequestChangePassword = nameof(RequestChangePassword);
             //Mediator感兴趣的事件
             public const string ChangePasswordResult = nameof(ChangePasswordResult);
-            public const string UpdateVehiclePara = nameof(UpdateVehiclePara);
             public const string UpdateUserInfo = nameof(UpdateUserInfo);
         }
         /// <summary>
@@ -53,6 +52,12 @@ namespace GameClient
         /// </summary>
         public static class StoreNotification
         {
+            //Command命令
+            public const string RequestStoreItemList = nameof(RequestStoreItemList);
+            public const string RequestPurchaseItem = nameof(RequestPurchaseItem);
+            //Mediator感兴趣的事件
+            public const string StoreItemListResult = nameof(StoreItemListResult);
+            public const string PurchaseItemResult = nameof(PurchaseItemResult);
 
         }
         /// <summary>
@@ -60,7 +65,10 @@ namespace GameClient
         /// </summary>
         public static class GarageNotification
         {
-
+            //Command命令
+            public const string RequestChangeVehicle = nameof(RequestChangeVehicle);
+            //Mediator感兴趣的事件
+            public const string ChangeVehicleResult = nameof(ChangeVehicleResult);
         }
         /// <summary>
         /// 存储房间模块用到的命令

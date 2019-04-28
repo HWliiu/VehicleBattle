@@ -49,7 +49,11 @@ namespace GameClient.View
         public override string[] ListNotificationInterests()
         {
             //列举感兴趣的通知
-            return new string[] { NotifyConsts.LoginNotification.LoginResult, NotifyConsts.LoginNotification.RegisterResult, NotifyConsts.CommonNotification.UpdateConnState };
+            return new string[] {
+                NotifyConsts.LoginNotification.LoginResult,
+                NotifyConsts.LoginNotification.RegisterResult,
+                NotifyConsts.CommonNotification.UpdateConnState
+            };
         }
 
         public override void OnRegister()
@@ -75,9 +79,9 @@ namespace GameClient.View
 
         private void HandleLoginResult(bool result, string info)
         {
+            _viewComponent.LoginTipsText.text = info;
             if (result)
             {
-                _viewComponent.LoginTipsText.text = info;
                 async Task subsequentHandle()
                 {
                     await Task.Delay(500);
@@ -85,17 +89,13 @@ namespace GameClient.View
                 }
                 _ = subsequentHandle();
             }
-            else
-            {
-                _viewComponent.LoginTipsText.text = info;
-            }
         }
 
         private void HandleRegisterResult(bool result, string info)
         {
+            _viewComponent.RegisterTipsText.text = info;
             if (result)
             {
-                _viewComponent.RegisterTipsText.text = info;
                 var username = _viewComponent.RegisterUserNameInput.text;
                 var password = _viewComponent.ConfirmPasswordInput.text;
                 async Task subsequentHandle()
@@ -107,10 +107,6 @@ namespace GameClient.View
                     _viewComponent.PasswordInput.text = password;
                 }
                 _ = subsequentHandle();
-            }
-            else
-            {
-                _viewComponent.RegisterTipsText.text = info;
             }
         }
 

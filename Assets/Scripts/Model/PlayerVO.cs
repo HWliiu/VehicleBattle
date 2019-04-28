@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GameClient.Model
 {
-    abstract class PlayerVO
+    public abstract class PlayerVO
     {
         protected PlayerVO(string userID, string userName, int level, VehicleVO curVehicle)
         {
