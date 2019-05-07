@@ -70,6 +70,8 @@ namespace GameClient.View
             _viewComponent.RegisterUserNameInput.onEndEdit.AddListener(OnRegisterUsernameEndEdit);
             _viewComponent.RegisterPasswordInput.onEndEdit.AddListener(OnRegisterPasswordEndEdit);
             _viewComponent.ConfirmPasswordInput.onEndEdit.AddListener(OnConfirmPasswordEndEdit);
+            
+            SendNotification(NotifyConsts.CommonNotification.UpdateConnState, NetworkService.Instance.ConnectState, nameof(ConnectState));
         }
 
         public override void OnRemove()

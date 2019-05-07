@@ -19,7 +19,7 @@ namespace GameClient
             //Mediator感兴趣的事件
             public const string UpdateConnState = nameof(UpdateConnState);
             //特殊常量
-            public const string Succeed = "succeed";    //这两个比较特殊用的小写
+            public const string Succeed = "succeed";
             public const string Failure = "failure";
         }
         /// <summary>
@@ -71,26 +71,45 @@ namespace GameClient
             public const string ChangeVehicleResult = nameof(ChangeVehicleResult);
         }
         /// <summary>
+        /// 存储大厅模块用到的命令
+        /// </summary>
+        public static class LobbyNotification
+        {
+            //Command命令
+            public const string RequestCreateRoom = nameof(RequestCreateRoom);
+            public const string RequestSearchRoom = nameof(RequestSearchRoom);
+            public const string RequestRefreshRoomList = nameof(RequestRefreshRoomList);
+            //Mediator感兴趣的事件
+            public const string CreateRoomResult = nameof(CreateRoomResult);
+            public const string SearchRoomResult = nameof(SearchRoomResult);
+            public const string RefreshRoomListResult = nameof(RefreshRoomListResult);
+
+        }
+        /// <summary>
         /// 存储房间模块用到的命令
         /// </summary>
         public static class RoomNotification
         {
-
+            //Command命令
+            //Mediator感兴趣的事件
         }
         /// <summary>
         /// 存储战斗模块用到的命令
         /// </summary>
         public static class BattleNotification
         {
-
+            //Command命令
+            //Mediator感兴趣的事件
         }
         /// <summary>
         /// 储存场景名称
         /// </summary>
         public static class SceneName
         {
-            public const string MainMenuScene = nameof(MainMenuScene);
             public const string LoginScene = nameof(LoginScene);
+            public const string LoadingScene = nameof(LoadingScene);
+            public const string MainMenuScene = nameof(MainMenuScene);
+            public const string RoomScene = nameof(RoomScene);
         }
     }
 }

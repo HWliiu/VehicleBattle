@@ -83,7 +83,6 @@ namespace GameClient.Service
 
         public void Close()
         {
-            // TODO: 资源清理
             _poolSemaphore.Dispose();
             _clientSocket.Close();
         }
@@ -100,12 +99,10 @@ namespace GameClient.Service
                 OnReceiveCompleted(this, readEventArgs);
             }
 
-            #region 学习记录
             //等价写法1
             //_clientSocket.ConnectAsync(_serverIp, _serverPort).GetAwaiter().OnCompleted(() =>/*await后的代码*/);  //OnCompleted中的代码在当前线程中执行
             //等价写法2
             //_clientSocket.ConnectAsync(_serverIp, _serverPort).ContinueWith((t) =>/*await后的代码*/);
-            #endregion
         }
 
         public async Task SendCommandAsync(string jsonData)

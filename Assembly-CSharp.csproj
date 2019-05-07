@@ -63,15 +63,19 @@
     <Compile Include="Assets\Scripts\AppFacade.cs" />
     <Compile Include="Assets\Scripts\Common\AsyncLoadScene.cs" />
     <Compile Include="Assets\Scripts\Common\CustomScrollRect.cs" />
+    <Compile Include="Assets\Scripts\Common\PlayerItem.cs" />
+    <Compile Include="Assets\Scripts\Common\RoomItem.cs" />
     <Compile Include="Assets\Scripts\Common\Util\RegexMatch.cs" />
     <Compile Include="Assets\Scripts\Common\Util\Singleton.cs" />
     <Compile Include="Assets\Scripts\Common\Util\UnityUtil.cs" />
     <Compile Include="Assets\Scripts\Common\VehicleItem.cs" />
     <Compile Include="Assets\Scripts\Controller\Command\ChangePwdCommand.cs" />
     <Compile Include="Assets\Scripts\Controller\Command\ChangeVehicleCommand.cs" />
+    <Compile Include="Assets\Scripts\Controller\Command\CreateRoomCommand.cs" />
     <Compile Include="Assets\Scripts\Controller\Command\LoginCommand.cs" />
     <Compile Include="Assets\Scripts\Controller\Command\LogoutCommand.cs" />
     <Compile Include="Assets\Scripts\Controller\Command\PurchaseCommand.cs" />
+    <Compile Include="Assets\Scripts\Controller\Command\RefreshRoomListCommand.cs" />
     <Compile Include="Assets\Scripts\Controller\Command\RegisterCommand.cs" />
     <Compile Include="Assets\Scripts\Controller\Command\RequestStoreItemCommand.cs" />
     <Compile Include="Assets\Scripts\Controller\Command\StartUpCommand.cs" />
@@ -81,6 +85,7 @@
     <Compile Include="Assets\Scripts\Model\PlayerManager.cs" />
     <Compile Include="Assets\Scripts\Model\PlayerVO.cs" />
     <Compile Include="Assets\Scripts\Model\Proxy\GarageProxy.cs" />
+    <Compile Include="Assets\Scripts\Model\Proxy\LobbyProxy.cs" />
     <Compile Include="Assets\Scripts\Model\Proxy\LoginProxy.cs" />
     <Compile Include="Assets\Scripts\Model\Proxy\MainMenuProxy.cs" />
     <Compile Include="Assets\Scripts\Model\Proxy\StoreProxy.cs" />
@@ -88,10 +93,14 @@
     <Compile Include="Assets\Scripts\NotifyConsts.cs" />
     <Compile Include="Assets\Scripts\Service\CommandDispatcher.cs" />
     <Compile Include="Assets\Scripts\Service\NetworkService.cs" />
+    <Compile Include="Assets\Scripts\View\LobbyView.cs" />
     <Compile Include="Assets\Scripts\View\LoginView.cs" />
     <Compile Include="Assets\Scripts\View\MainMenuView.cs" />
+    <Compile Include="Assets\Scripts\View\Mediator\LobbyMediator.cs" />
     <Compile Include="Assets\Scripts\View\Mediator\LoginMediator.cs" />
     <Compile Include="Assets\Scripts\View\Mediator\MainMenuMediator.cs" />
+    <Compile Include="Assets\Scripts\View\Mediator\RoomMediator.cs" />
+    <Compile Include="Assets\Scripts\View\RoomView.cs" />
     <None Include="Assets\Resources\Sprite\null.txt" />
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>C:/Users/plays/source/repos/VehicleBattle/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>

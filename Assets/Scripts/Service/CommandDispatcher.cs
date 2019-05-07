@@ -1,6 +1,7 @@
 ﻿using GameClient.Model;
 using GameClient.Service;
 using Newtonsoft.Json.Linq;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
@@ -12,11 +13,13 @@ namespace GameClient.Service
     {
         private RecvBufQueue _recvBufQueue;
         private AppFacade _appFacade;
+        private Dictionary<string, Lazy<Action<JObject>>> _commandDict;
 
         public CommandDispatcher()
         {
             _recvBufQueue = NetworkService.Instance.RecvBufQueue;
             _appFacade = AppFacade.Instance;
+            InitCommandDict();
         }
 
         public void StartDispatch(object state)
@@ -33,37 +36,35 @@ namespace GameClient.Service
                         JObject o = JObject.Parse(msg);
                         string command = (string)o.SelectToken("Command");
                         o.Property("Command").Remove();
-                        // TODO: 有空再来改这一块(使用反射+特性)
-                        switch (command)
+
+                        if (_commandDict.TryGetValue(command, out var lazyAction))
                         {
                             //封送回主线程执行
-                            case NotifyConsts.LoginNotification.LoginResult:
-                                context.Post((obj) => (_appFacade.RetrieveProxy(nameof(LoginProxy)) as LoginProxy).LoginResult(obj as JObject), o);
-                                break;
-                            case NotifyConsts.LoginNotification.LogoutResult:
-                                context.Post((obj) => (_appFacade.RetrieveProxy(nameof(LoginProxy)) as LoginProxy).LogoutResult(obj as JObject), o);
-                                break;
-                            case NotifyConsts.LoginNotification.RegisterResult:
-                                context.Post((obj) => (_appFacade.RetrieveProxy(nameof(LoginProxy)) as LoginProxy).RegisterResult(obj as JObject), o);
-                                break;
-                            case NotifyConsts.MainMenuNotification.ChangePasswordResult:
-                                context.Post((obj) => (_appFacade.RetrieveProxy(nameof(MainMenuProxy)) as MainMenuProxy).ChangePasswordResult(obj as JObject), o);
-                                break;
-                            case NotifyConsts.StoreNotification.StoreItemListResult:
-                                context.Post((obj) => (_appFacade.RetrieveProxy(nameof(StoreProxy)) as StoreProxy).StoreItemListResult(obj as JObject), o);
-                                break;
-                            case NotifyConsts.StoreNotification.PurchaseItemResult:
-                                context.Post((obj) => (_appFacade.RetrieveProxy(nameof(StoreProxy)) as StoreProxy).PurchaseItemResult(obj as JObject), o);
-                                break;
-                            case NotifyConsts.GarageNotification.ChangeVehicleResult:
-                                context.Post((obj) => (_appFacade.RetrieveProxy(nameof(GarageProxy)) as GarageProxy).ChangeVehicleResult(obj as JObject), o);
-                                break;
-                            default:
-                                break;
+                            context.Post((obj) => lazyAction.Value(obj as JObject), o);
+                        }
+                        else
+                        {
+                            Debug.Log("Command not found");
                         }
                     }
                 }
             }
         }
+
+        private void InitCommandDict() => _commandDict = new Dictionary<string, Lazy<Action<JObject>>>
+            {
+                { NotifyConsts.LoginNotification.LoginResult, new Lazy<Action<JObject>>(() => (_appFacade.RetrieveProxy(nameof(LoginProxy)) as LoginProxy).LoginResult) },
+                { NotifyConsts.LoginNotification.LogoutResult, new Lazy<Action<JObject>>(() => (_appFacade.RetrieveProxy(nameof(LoginProxy)) as LoginProxy).LogoutResult) },
+                { NotifyConsts.LoginNotification.RegisterResult, new Lazy<Action<JObject>>(() => (_appFacade.RetrieveProxy(nameof(LoginProxy)) as LoginProxy).RegisterResult) },
+
+                { NotifyConsts.MainMenuNotification.ChangePasswordResult, new Lazy<Action<JObject>>(() => (_appFacade.RetrieveProxy(nameof(MainMenuProxy)) as MainMenuProxy).ChangePasswordResult) },
+
+                { NotifyConsts.StoreNotification.StoreItemListResult, new Lazy<Action<JObject>>(() => (_appFacade.RetrieveProxy(nameof(StoreProxy)) as StoreProxy).StoreItemListResult) },
+                { NotifyConsts.StoreNotification.PurchaseItemResult, new Lazy<Action<JObject>>(() => (_appFacade.RetrieveProxy(nameof(StoreProxy)) as StoreProxy).PurchaseItemResult) },
+
+                { NotifyConsts.GarageNotification.ChangeVehicleResult, new Lazy<Action<JObject>>(() => (_appFacade.RetrieveProxy(nameof(GarageProxy)) as GarageProxy).ChangeVehicleResult) },
+
+                { NotifyConsts.LobbyNotification.CreateRoomResult, new Lazy<Action<JObject>>(() => (_appFacade.RetrieveProxy(nameof(LobbyProxy)) as LobbyProxy).CreateRoomResult) }
+            };
     }
 }

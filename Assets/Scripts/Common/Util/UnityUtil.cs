@@ -23,7 +23,7 @@ namespace GameClient.Common
         public static void LoadScene(string sceneName)
         {
             AsyncLoadScene.LoadSceneName = sceneName;
-            SceneManager.LoadScene("LoadingScene");
+            SceneManager.LoadScene(NotifyConsts.SceneName.LoadingScene);
         }
         public static void UpdateConnStateDisplay(ConnectState connectState, Text connectStateText)
         {
@@ -31,12 +31,15 @@ namespace GameClient.Common
             {
                 case ConnectState.Disconnect:
                     connectStateText.text = "连接失败";
+                    connectStateText.color = Color.red;
                     break;
                 case ConnectState.Connecting:
                     connectStateText.text = "正在连接";
+                    connectStateText.color = Color.yellow;
                     break;
                 case ConnectState.Connected:
                     connectStateText.text = "已连接";
+                    connectStateText.color = Color.green;
                     break;
                 default:
                     break;

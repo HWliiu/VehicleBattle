@@ -8,72 +8,72 @@ namespace GameClient.Common
 {
     public class VehicleItem : MonoBehaviour
     {
-        private string vehicleID;
-        private string vehicleName;
-        private string vehicleType;
-        private float attack;
-        private float motility;
-        private float defend;
-        private int maxHealth;
-        private int price;
-        private string intro;
+        private string _vehicleID;
+        private string _vehicleName;
+        private string _vehicleType;
+        private float _attack;
+        private float _motility;
+        private float _defend;
+        private int _maxHealth;
+        private int _price;
+        private string _intro;
 
-        public string VehicleID { get => vehicleID; set => vehicleID = value; }
+        public string VehicleID { get => _vehicleID; set => _vehicleID = value; }
         public string VehicleName
         {
-            get => vehicleName;
+            get => _vehicleName;
             set
             {
-                vehicleName = value;
-                (gameObject.transform.Find("VehicleNameText")?.GetComponent<Text>()).text = vehicleName;
+                _vehicleName = value;
+                (gameObject.transform.Find("VehicleNameText")?.GetComponent<Text>()).text = _vehicleName;
             }
         }
-        public string VehicleType { get => vehicleType; set => vehicleType = value; }
+        public string VehicleType { get => _vehicleType; set => _vehicleType = value; }
         public float Attack
         {
-            get => attack;
+            get => _attack;
             set
             {
-                attack = value;
-                (gameObject.transform.Find("AttackText")?.GetComponent<Text>()).text = attack.ToString("F1");
+                _attack = value;
+                (gameObject.transform.Find("AttackText")?.GetComponent<Text>()).text = _attack.ToString("F1");
             }
         }
         public float Motility
         {
-            get => motility;
+            get => _motility;
             set
             {
-                motility = value;
-                (gameObject.transform.Find("MotilityText")?.GetComponent<Text>()).text = motility.ToString("F1");
+                _motility = value;
+                (gameObject.transform.Find("MotilityText")?.GetComponent<Text>()).text = _motility.ToString("F1");
             }
         }
         public float Defend
         {
-            get => defend;
+            get => _defend;
             set
             {
-                defend = value;
-                (gameObject.transform.Find("DefendText")?.GetComponent<Text>()).text = defend.ToString("F1");
+                _defend = value;
+                (gameObject.transform.Find("DefendText")?.GetComponent<Text>()).text = _defend.ToString("F1");
             }
         }
         public int MaxHealth
         {
-            get => maxHealth;
+            get => _maxHealth;
             set
             {
-                maxHealth = value;
-                (gameObject.transform.Find("MaxHealthText")?.GetComponent<Text>()).text = maxHealth.ToString();
+                _maxHealth = value;
+                (gameObject.transform.Find("MaxHealthText")?.GetComponent<Text>()).text = _maxHealth.ToString();
             }
         }
         public int Price
         {
-            get => price;
+            get => _price;
             set
             {
-                price = value;
-                (gameObject.transform.Find("PriceText")?.GetComponent<Text>()).text = price.ToString();
+                _price = value;
+                (gameObject.transform.Find("PriceText")?.GetComponent<Text>()).text = _price.ToString();
             }
         }
-        public string Intro { get => intro; set => intro = value; }
+        public string Intro { get => _intro; set => _intro = value; }
     }
 }

@@ -24,6 +24,6 @@ namespace GameClient.Model
 
         public void AddNetPlayer(string userID, string userName, int level, VehicleVO curVehicle) => _netPlayerDict.Add(userID, new NetPlayerVO(userID, userName, level, curVehicle));
         public void RemoveNetPlayer(string userId) => _netPlayerDict.Remove(userId);
-        public NetPlayerVO GetNetPlayer(string userId) => _netPlayerDict.TryGetValue(userId, out NetPlayerVO netPlayerVO) == true ? netPlayerVO : null;
+        public NetPlayerVO GetNetPlayer(string userId) => _netPlayerDict.TryGetValue(userId, out NetPlayerVO netPlayerVO) ? netPlayerVO : null;
     }
 }

@@ -100,9 +100,11 @@ namespace GameClient.View
             //GaragePanel
             _viewComponent.GR_ChangeVehicleBtn.onClick.AddListener(OnChangeVehicleBtn);
             //Init
-            UpdateUserInfo(PlayerManager.Instance.LocalPlayer);
-            RequestStoreItemList();
             _viewComponent.InitGarageItemList(PlayerManager.Instance.LocalPlayer.VehicleList);
+
+            SendNotification(NotifyConsts.MainMenuNotification.UpdateUserInfo, PlayerManager.Instance.LocalPlayer, nameof(LocalPlayerVO));
+            SendNotification(NotifyConsts.StoreNotification.RequestStoreItemList, null, null);
+            SendNotification(NotifyConsts.CommonNotification.UpdateConnState, NetworkService.Instance.ConnectState, nameof(ConnectState));
         }
 
         public override void OnRemove()
@@ -269,7 +271,6 @@ namespace GameClient.View
         }
         #endregion
         #region StorePanel
-        private void RequestStoreItemList() => SendNotification(NotifyConsts.StoreNotification.RequestStoreItemList, null, null);
         private void HandleStoreItemListResult(List<VehicleVO> vehicleList) => _viewComponent.InitStoreItemList(vehicleList);
         private void OnBuyVehicleBtn()
         {

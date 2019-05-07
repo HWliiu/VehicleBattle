@@ -233,7 +233,7 @@ namespace GameClient.View
         private void OnGarageBtn() => GaragePanel.gameObject.SetActive(true);
         private void OnStoreBtn() => StorePanel.gameObject.SetActive(true);
         private void OnSettingBtn() => SettingPanel.gameObject.SetActive(true);
-        private void OnStartGameBtn() { }
+        private void OnStartGameBtn() => UnityUtil.LoadScene(NotifyConsts.SceneName.RoomScene);
         #endregion
         #region UserInfoPanel
         private void OnUserInfoBackMainMenuBtn() => UserInfoPanel.gameObject.SetActive(false);

@@ -36,7 +36,7 @@ namespace GameClient.Common
                 _targetValue = 1.0f;
             }
 
-            LoadingSlider.value = Mathf.Lerp(LoadingSlider.value, _targetValue, Time.deltaTime);
+            LoadingSlider.value = Mathf.Lerp(LoadingSlider.value, _targetValue, Time.deltaTime * 3);
             if (_targetValue - LoadingSlider.value < 0.01f)
             {
                 LoadingSlider.value = _targetValue;

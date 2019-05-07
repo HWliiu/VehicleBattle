@@ -20,6 +20,13 @@ namespace GameClient.Model
         public readonly string UserName;
         public int Level { get; set; }
         public bool PrepareState { get; set; }
+        public Team Team { get; set; }
         public VehicleVO CurVehicle { get; set; }
+    }
+    public enum Team
+    {
+        None,
+        Red,
+        Blue
     }
 }
