@@ -5,32 +5,47 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using GameClient.Service;
 using System;
+using GameClient.Common;
 
 namespace GameClient.Model
 {
     class LoginProxy : Proxy
     {
         //对数据模型的操作，不论是对于客户端还是对于服务端，后续的添加和修改接口只在Proxy中完成
+        private RequestInterceptor _loginInterceptor;
+        private RequestInterceptor _registerInterceptor;
+        private RequestInterceptor _logoutInterceptor;
         public LoginProxy(string proxyName, object data = null) : base(proxyName, data)
         {
+            _loginInterceptor = new RequestInterceptor(1f);
+            _loginInterceptor.OnRequestStateChange += (info) => SendNotification(NotifyConsts.LoginNotification.LoginResult, Tuple.Create(false, info), nameof(Tuple<bool, string>));
+            _registerInterceptor = new RequestInterceptor(1f);
+            _registerInterceptor.OnRequestStateChange += (info) => SendNotification(NotifyConsts.LoginNotification.RegisterResult, Tuple.Create(false, info), nameof(Tuple<bool, string>));
+            _logoutInterceptor = new RequestInterceptor(1f);
+            _logoutInterceptor.OnRequestStateChange += (info) => SendNotification(NotifyConsts.LoginNotification.LogoutResult, Tuple.Create(false, info), nameof(Tuple<bool, string>));
         }
         public void RequestLogin(string username, string password)
         {
-            JObject o = new JObject
+            if (_loginInterceptor.AllowRequest())
             {
-                { "Command", NotifyConsts.LoginNotification.RequestLogin },
+                JObject o = new JObject
                 {
-                    "Paras", new JObject
+                    { "Command", NotifyConsts.LoginNotification.RequestLogin },
                     {
-                        { "UserName",username },
-                        { "Password",password }
+                        "Paras", new JObject
+                        {
+                            { "UserName",username },
+                            { "Password",password }
+                        }
                     }
-                }
-            };
-            _ = NetworkService.Instance.SendCommandAsync(o.ToString(Formatting.None));
+                };
+                _ = NetworkService.Instance.SendCommandAsync(o.ToString(Formatting.None));
+                _ = _loginInterceptor.BeginWaitResponseAsync();
+            }
         }
         public void LoginResult(JObject jsonData)
         {
+            _loginInterceptor.EndWaitResponse();
             if (jsonData == null)
             {
                 throw new ArgumentNullException(nameof(jsonData));
@@ -61,7 +76,7 @@ namespace GameClient.Model
                     var vehicleMotility = (float)jToken.SelectToken("Motility");
                     var vehicleDefend = (float)jToken.SelectToken("Defend");
                     var vehicleMaxHealth = (int)(float)jToken.SelectToken("MaxHealth");
-                    var vehiclePrice = (int)(float)jToken.SelectToken("Price");
+                    var vehiclePrice = (int)jToken.SelectToken("Price");
                     var vehicleIntro = (string)jToken.SelectToken("Intro");
                     VehicleVO vehicle = new VehicleVO(vehicleId, vehicleName, Enum.TryParse(vehicleType, true, out VehicleType type) ? type : throw new InvalidCastException(nameof(vehicleType)), vehicleAttack, vehicleMotility, vehicleDefend, vehicleMaxHealth, vehiclePrice, vehicleIntro);
                     vehicleList.Add(vehicle);
@@ -82,22 +97,27 @@ namespace GameClient.Model
         }
         public void RequestRegister(string username, string password)
         {
-            JObject o = new JObject
+            if (_registerInterceptor.AllowRequest())
             {
-                { "Command", NotifyConsts.LoginNotification.RequestRegister },
+                JObject o = new JObject
                 {
-                    "Paras", new JObject
+                    { "Command", NotifyConsts.LoginNotification.RequestRegister },
                     {
-                        { "UserName",username },
-                        { "Password",password }
+                        "Paras", new JObject
+                        {
+                            { "UserName",username },
+                            { "Password",password }
+                        }
                     }
-                }
-            };
-            _ = NetworkService.Instance.SendCommandAsync(o.ToString(Formatting.None));
+                };
+                _ = NetworkService.Instance.SendCommandAsync(o.ToString(Formatting.None));
+                _ = _registerInterceptor.BeginWaitResponseAsync();
+            }
         }
 
         public void RegisterResult(JObject jsonData)
         {
+            _registerInterceptor.EndWaitResponse();
             if (jsonData == null)
             {
                 throw new ArgumentNullException(nameof(jsonData));
@@ -117,22 +137,27 @@ namespace GameClient.Model
 
         public void RequestLogout()
         {
-            JObject o = new JObject
+            if (_logoutInterceptor.AllowRequest())
             {
-                { "Command", NotifyConsts.LoginNotification.RequestLogout },
+                JObject o = new JObject
                 {
-                    "Paras", new JObject
+                    { "Command", NotifyConsts.LoginNotification.RequestLogout },
                     {
-                        { "UserId",PlayerManager.Instance.LocalPlayer.UserID },
-                        { "Token",PlayerManager.Instance.LocalPlayer.Token }
+                        "Paras", new JObject
+                        {
+                            { "UserId",PlayerManager.Instance.LocalPlayer.UserID },
+                            { "Token",PlayerManager.Instance.LocalPlayer.Token }
+                        }
                     }
-                }
-            };
-            _ = NetworkService.Instance.SendCommandAsync(o.ToString(Formatting.None));
+                };
+                _ = NetworkService.Instance.SendCommandAsync(o.ToString(Formatting.None));
+                _ = _logoutInterceptor.BeginWaitResponseAsync();
+            }
         }
 
         public void LogoutResult(JObject jsonData)
         {
+            _logoutInterceptor.EndWaitResponse();
             if (jsonData == null)
             {
                 throw new ArgumentNullException(nameof(jsonData));

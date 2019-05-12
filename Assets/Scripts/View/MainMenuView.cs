@@ -1,5 +1,4 @@
 ﻿using GameClient.Common;
-using GameClient.Controller;
 using GameClient.Model;
 using System;
 using System.Collections;
@@ -88,6 +87,12 @@ namespace GameClient.View
         public VehicleItem SelectStoreItem { get; set; }
         public VehicleItem SelectGarageItem { get; set; }
 
+        private Vector2 _storeScrollViewAnchoredPos;
+        private float _storeScrollViewTargetPosX;
+
+        private Vector2 _garageScrollViewAnchoredPos;
+        private float _garageScrollViewTargetPosX;
+
         // Start is called before the first frame update
         void Start()
         {
@@ -101,14 +106,9 @@ namespace GameClient.View
             InitSettingPanel();
             InitDialogPanel();
 
-            AppFacade.Instance.RegisterCommand(NotifyConsts.MainMenuNotification.RequestChangePassword, () => new ChangePwdCommand());
-            AppFacade.Instance.RegisterCommand(NotifyConsts.StoreNotification.RequestStoreItemList, () => new RequestStoreItemCommand());
-            AppFacade.Instance.RegisterCommand(NotifyConsts.StoreNotification.RequestPurchaseItem, () => new PurchaseCommand());
-            AppFacade.Instance.RegisterCommand(NotifyConsts.GarageNotification.RequestChangeVehicle, () => new ChangeVehicleCommand());
-            AppFacade.Instance.RegisterProxy(new MainMenuProxy(nameof(MainMenuProxy), null));
-            AppFacade.Instance.RegisterProxy(new StoreProxy(nameof(StoreProxy), null));
-            AppFacade.Instance.RegisterProxy(new GarageProxy(nameof(GarageProxy), null));
             AppFacade.Instance.RegisterMediator(new MainMenuMediator(nameof(MainMenuMediator), this));
+
+            _storeScrollViewAnchoredPos = new Vector2(ST_ScrollView.content.anchoredPosition.x, 0f);
         }
         void InitMainMenuPanel()
         {
@@ -180,6 +180,7 @@ namespace GameClient.View
             ST_LeftBtn.onClick.AddListener(OnStoreLeftBtn);
             ST_RightBtn.onClick.AddListener(OnStoreRightBtn);
             ST_ScrollView.onValueChanged.AddListener(OnStoreScrollViewValueChanged);
+            ST_ScrollView.OnDragEnd = () => _storeScrollViewAnchoredPos.x = _storeScrollViewTargetPosX = ST_ScrollView.content.anchoredPosition.x;
         }
         void InitGaragePanel()
         {
@@ -193,6 +194,7 @@ namespace GameClient.View
             GR_LeftBtn.onClick.AddListener(OnGarageLeftBtn);
             GR_RightBtn.onClick.AddListener(OnGarageRightBtn);
             GR_ScrollView.onValueChanged.AddListener(OnGaragePanelScrollViewValueChanged);
+            GR_ScrollView.OnDragEnd = () => _garageScrollViewAnchoredPos.x = _garageScrollViewTargetPosX = GR_ScrollView.content.anchoredPosition.x;
         }
         void InitSettingPanel()
         {
@@ -213,21 +215,19 @@ namespace GameClient.View
         // Update is called once per frame
         void Update()
         {
-
+            if (StorePanel.gameObject.activeSelf && Mathf.Abs(_storeScrollViewAnchoredPos.x - _storeScrollViewTargetPosX) > 0.1f)
+            {
+                _storeScrollViewAnchoredPos.x = Mathf.Lerp(_storeScrollViewAnchoredPos.x, _storeScrollViewTargetPosX, Time.deltaTime * 8);
+                ST_ScrollView.SetContentAnchoredPosition(_storeScrollViewAnchoredPos);
+            }
+            if (GaragePanel.gameObject.activeSelf && Mathf.Abs(_garageScrollViewAnchoredPos.x - _garageScrollViewTargetPosX) > 0.1f)
+            {
+                _garageScrollViewAnchoredPos.x = Mathf.Lerp(_garageScrollViewAnchoredPos.x, _garageScrollViewTargetPosX, Time.deltaTime * 8);
+                GR_ScrollView.SetContentAnchoredPosition(_garageScrollViewAnchoredPos);
+            }
         }
 
-        private void OnDestroy()
-        {
-            AppFacade.Instance.RemoveCommand(NotifyConsts.MainMenuNotification.RequestChangePassword);
-            AppFacade.Instance.RemoveCommand(NotifyConsts.StoreNotification.RequestStoreItemList);
-            AppFacade.Instance.RemoveCommand(NotifyConsts.StoreNotification.RequestPurchaseItem);
-            AppFacade.Instance.RemoveCommand(NotifyConsts.GarageNotification.RequestChangeVehicle);
-            AppFacade.Instance.RemoveProxy(nameof(MainMenuProxy));
-            AppFacade.Instance.RemoveProxy(nameof(StoreProxy));
-            AppFacade.Instance.RemoveProxy(nameof(GarageProxy));
-            AppFacade.Instance.RemoveMediator(nameof(MainMenuMediator));
-
-        }
+        private void OnDestroy() => AppFacade.Instance.RemoveMediator(nameof(MainMenuMediator));
         #region MainMenuPanel
         private void OnUserInfoBtn() => UserInfoPanel.gameObject.SetActive(true);
         private void OnGarageBtn() => GaragePanel.gameObject.SetActive(true);
@@ -259,22 +259,26 @@ namespace GameClient.View
         private void OnStoreBackMainMenu() => StorePanel.gameObject.SetActive(false);
         private void OnStoreLeftBtn()
         {
-            ST_ScrollView.SetContentAnchoredPosition(new Vector2(ST_ScrollView.content.anchoredPosition.x + ST_ScrollView.content.GetComponent<GridLayoutGroup>().cellSize.x + ST_ScrollView.content.GetComponent<GridLayoutGroup>().padding.left, 0f));
+            //ST_ScrollView.SetContentAnchoredPosition(new Vector2(ST_ScrollView.content.anchoredPosition.x + ST_ScrollView.content.GetComponent<GridLayoutGroup>().cellSize.x + ST_ScrollView.content.GetComponent<GridLayoutGroup>().padding.left, 0f));
+            float xPos = ST_ScrollView.content.anchoredPosition.x + ST_ScrollView.content.GetComponent<GridLayoutGroup>().cellSize.x + ST_ScrollView.content.GetComponent<GridLayoutGroup>().padding.left;
+            _storeScrollViewTargetPosX = xPos > 0f ? 0f : xPos;
         }
         private void OnStoreRightBtn()
         {
-            ST_ScrollView.SetContentAnchoredPosition(new Vector2(ST_ScrollView.content.anchoredPosition.x - ST_ScrollView.content.GetComponent<GridLayoutGroup>().cellSize.x - ST_ScrollView.content.GetComponent<GridLayoutGroup>().padding.left, 0f));
+            //ST_ScrollView.SetContentAnchoredPosition(new Vector2(ST_ScrollView.content.anchoredPosition.x - ST_ScrollView.content.GetComponent<GridLayoutGroup>().cellSize.x - ST_ScrollView.content.GetComponent<GridLayoutGroup>().padding.left, 0f));
+            float xPos = ST_ScrollView.content.anchoredPosition.x - ST_ScrollView.content.GetComponent<GridLayoutGroup>().cellSize.x - ST_ScrollView.content.GetComponent<GridLayoutGroup>().padding.left;
+            _storeScrollViewTargetPosX = xPos < -ST_ScrollView.content.sizeDelta.x ? -ST_ScrollView.content.sizeDelta.x : xPos;
         }
         private void OnStoreScrollViewValueChanged(Vector2 position)
         {
             if (position.x < 0.01f)
             {
-                ST_ScrollView.SetContentAnchoredPosition(new Vector2(0f, 0f));
+                //ST_ScrollView.SetContentAnchoredPosition(new Vector2(0f, 0f));
                 ST_LeftBtn.interactable = false;
             }
             else if (position.x > 0.99f)
             {
-                ST_ScrollView.SetContentAnchoredPosition(new Vector2(-ST_ScrollView.content.sizeDelta.x, 0f));
+                //ST_ScrollView.SetContentAnchoredPosition(new Vector2(-ST_ScrollView.content.sizeDelta.x, 0f));
                 ST_RightBtn.interactable = false;
             }
             else
@@ -302,22 +306,26 @@ namespace GameClient.View
         private void OnGarageBackMainMenu() => GaragePanel.gameObject.SetActive(false);
         private void OnGarageLeftBtn()
         {
-            GR_ScrollView.SetContentAnchoredPosition(new Vector2(GR_ScrollView.content.anchoredPosition.x + GR_ScrollView.content.GetComponent<GridLayoutGroup>().cellSize.x + GR_ScrollView.content.GetComponent<GridLayoutGroup>().padding.left, 0f));
+            //GR_ScrollView.SetContentAnchoredPosition(new Vector2(GR_ScrollView.content.anchoredPosition.x + GR_ScrollView.content.GetComponent<GridLayoutGroup>().cellSize.x + GR_ScrollView.content.GetComponent<GridLayoutGroup>().padding.left, 0f));
+            float xPos = GR_ScrollView.content.anchoredPosition.x + GR_ScrollView.content.GetComponent<GridLayoutGroup>().cellSize.x + GR_ScrollView.content.GetComponent<GridLayoutGroup>().padding.left;
+            _garageScrollViewTargetPosX = xPos > 0f ? 0f : xPos;
         }
         private void OnGarageRightBtn()
         {
-            GR_ScrollView.SetContentAnchoredPosition(new Vector2(GR_ScrollView.content.anchoredPosition.x - GR_ScrollView.content.GetComponent<GridLayoutGroup>().cellSize.x - GR_ScrollView.content.GetComponent<GridLayoutGroup>().padding.left, 0f));
+            //GR_ScrollView.SetContentAnchoredPosition(new Vector2(GR_ScrollView.content.anchoredPosition.x - GR_ScrollView.content.GetComponent<GridLayoutGroup>().cellSize.x - GR_ScrollView.content.GetComponent<GridLayoutGroup>().padding.left, 0f));
+            float xPos = GR_ScrollView.content.anchoredPosition.x - GR_ScrollView.content.GetComponent<GridLayoutGroup>().cellSize.x - GR_ScrollView.content.GetComponent<GridLayoutGroup>().padding.left;
+            _garageScrollViewTargetPosX = xPos < -GR_ScrollView.content.sizeDelta.x ? -GR_ScrollView.content.sizeDelta.x : xPos;
         }
         private void OnGaragePanelScrollViewValueChanged(Vector2 position)
         {
             if (position.x < 0.01f)
             {
-                GR_ScrollView.SetContentAnchoredPosition(new Vector2(0f, 0f));
+                //GR_ScrollView.SetContentAnchoredPosition(new Vector2(0f, 0f));
                 GR_LeftBtn.interactable = false;
             }
             else if (position.x > 0.99f)
             {
-                GR_ScrollView.SetContentAnchoredPosition(new Vector2(-GR_ScrollView.content.sizeDelta.x, 0f));
+                //GR_ScrollView.SetContentAnchoredPosition(new Vector2(-GR_ScrollView.content.sizeDelta.x, 0f));
                 GR_RightBtn.interactable = false;
             }
             else
@@ -342,8 +350,8 @@ namespace GameClient.View
         }
         public void AddGarageItem(VehicleVO vehicle)
         {
-            var garageItemPreb = Resources.Load<GameObject>("Prefab/GarageItem");
-            var item = AddItemToScrollView(vehicle, garageItemPreb, GR_ScrollView);
+            var garageItemPrefab = Resources.Load<GameObject>("Prefab/GarageItem");
+            var item = AddItemToScrollView(vehicle, garageItemPrefab, GR_ScrollView);
             item.GetComponent<Toggle>().onValueChanged.AddListener(isOn => { if (isOn) SelectGarageItem = item.GetComponent<VehicleItem>(); });
         }
         #endregion

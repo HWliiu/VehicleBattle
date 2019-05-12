@@ -1,4 +1,5 @@
-﻿using GameClient.Service;
+﻿using GameClient.Common;
+using GameClient.Service;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PureMVC.Patterns.Proxy;
@@ -13,8 +14,11 @@ namespace GameClient.Model
     class StoreProxy : Proxy
     {
         private LocalPlayerVO _localPlayer;
+        private RequestInterceptor _purchaseInterceptor;
         public StoreProxy(string proxyName, object data = null) : base(proxyName, data)
         {
+            _purchaseInterceptor = new RequestInterceptor(1f);
+            _purchaseInterceptor.OnRequestStateChange += (info) => SendNotification(NotifyConsts.StoreNotification.PurchaseItemResult, Tuple.Create<bool, string, VehicleVO>(false, info, null), nameof(Tuple<bool, string, VehicleVO>));
         }
         public void RequestStoreItemList()
         {
@@ -56,22 +60,27 @@ namespace GameClient.Model
         }
         public void RequestPurchaseItem(string itemId)
         {
-            JObject o = new JObject
+            if (_purchaseInterceptor.AllowRequest())
             {
-                { "Command", NotifyConsts.StoreNotification.RequestPurchaseItem },
+                JObject o = new JObject
                 {
-                    "Paras", new JObject
+                    { "Command", NotifyConsts.StoreNotification.RequestPurchaseItem },
                     {
-                        { "UserId",_localPlayer.UserID },
-                        { "Token",_localPlayer.Token },
-                        { "VehicleId",itemId }
+                        "Paras", new JObject
+                        {
+                            { "UserId",_localPlayer.UserID },
+                            { "Token",_localPlayer.Token },
+                            { "VehicleId",itemId }
+                        }
                     }
-                }
-            };
-            _ = NetworkService.Instance.SendCommandAsync(o.ToString(Formatting.None));
+                };
+                _ = NetworkService.Instance.SendCommandAsync(o.ToString(Formatting.None));
+                _ = _purchaseInterceptor.BeginWaitResponseAsync();
+            }
         }
         public void PurchaseItemResult(JObject jsonData)
         {
+            _purchaseInterceptor.EndWaitResponse();
             if (jsonData == null)
             {
                 throw new ArgumentNullException(nameof(jsonData));
@@ -90,7 +99,7 @@ namespace GameClient.Model
                 var vehicleMotility = (float)jsonData.SelectToken("Paras.VehicleInfo.Motility");
                 var vehicleDefend = (float)jsonData.SelectToken("Paras.VehicleInfo.Defend");
                 var vehicleMaxHealth = (int)(float)jsonData.SelectToken("Paras.VehicleInfo.MaxHealth");
-                var vehiclePrice = (int)(float)jsonData.SelectToken("Paras.VehicleInfo.Price");
+                var vehiclePrice = (int)jsonData.SelectToken("Paras.VehicleInfo.Price");
                 var vehicleIntro = (string)jsonData.SelectToken("Paras.VehicleInfo.Intro");
 
                 var vehicle = new VehicleVO(vehicleId, vehicleName, Enum.TryParse(vehicleType, true, out VehicleType type) ? type : throw new InvalidCastException(nameof(vehicleType)), vehicleAttack, vehicleMotility, vehicleDefend, vehicleMaxHealth, vehiclePrice, vehicleIntro);

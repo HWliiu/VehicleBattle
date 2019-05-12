@@ -38,7 +38,7 @@ namespace GameClient.Model
             MaxHealth = maxHealth;
             Health = MaxHealth;
             Price = price;
-            Intro = intro ?? throw new ArgumentNullException(nameof(intro));
+            Intro = intro;
         }
         public void Deconstruct(out string id, out string name, out string type, out float attack, out float motility, out float defend, out int maxHealth, out int price, out string intro)
         {

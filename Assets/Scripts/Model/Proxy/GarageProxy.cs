@@ -1,4 +1,5 @@
-﻿using GameClient.Service;
+﻿using GameClient.Common;
+using GameClient.Service;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PureMVC.Patterns.Proxy;
@@ -13,27 +14,35 @@ namespace GameClient.Model
     class GarageProxy : Proxy
     {
         private LocalPlayerVO _localPlayer;
+        private RequestInterceptor _changeVehicleInterceptor;
         public GarageProxy(string proxyName, object data = null) : base(proxyName, data)
         {
+            _changeVehicleInterceptor = new RequestInterceptor(1f);
+            _changeVehicleInterceptor.OnRequestStateChange += (info) => SendNotification(NotifyConsts.GarageNotification.ChangeVehicleResult, Tuple.Create<bool, string, string>(false, info, null), nameof(Tuple<bool, string, string>));
         }
         public void RequestChangeVehicle(string vehicleId)
         {
-            JObject o = new JObject
+            if (_changeVehicleInterceptor.AllowRequest())
             {
-                { "Command", NotifyConsts.GarageNotification.RequestChangeVehicle },
+                JObject o = new JObject
                 {
-                    "Paras", new JObject
+                    { "Command", NotifyConsts.GarageNotification.RequestChangeVehicle },
                     {
-                        { "UserId",_localPlayer.UserID },
-                        { "Token",_localPlayer.Token },
-                        { "VehicleId",vehicleId }
+                        "Paras", new JObject
+                        {
+                            { "UserId",_localPlayer.UserID },
+                            { "Token",_localPlayer.Token },
+                            { "VehicleId",vehicleId }
+                        }
                     }
-                }
-            };
-            _ = NetworkService.Instance.SendCommandAsync(o.ToString(Formatting.None));
+                };
+                _ = NetworkService.Instance.SendCommandAsync(o.ToString(Formatting.None));
+                _ = _changeVehicleInterceptor.BeginWaitResponseAsync();
+            }
         }
         public void ChangeVehicleResult(JObject jsonData)
         {
+            _changeVehicleInterceptor.EndWaitResponse();
             if (jsonData == null)
             {
                 throw new ArgumentNullException(nameof(jsonData));

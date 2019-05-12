@@ -1,5 +1,4 @@
 ﻿using GameClient.Common;
-using GameClient.Controller;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -39,8 +38,6 @@ namespace GameClient.View
             InitComponent();
 
             AppFacade.Instance.RegisterMediator(new LoginMediator(nameof(LoginView), this));
-            AppFacade.Instance.RegisterCommand(NotifyConsts.LoginNotification.RequestLogin, () => new LoginCommand());
-            AppFacade.Instance.RegisterCommand(NotifyConsts.LoginNotification.RequestRegister, () => new RegisterCommand());
 
             RegisterBtn.onClick.AddListener(OnRegisterBtn);
             BackLoginBtn.onClick.AddListener(OnBackLoginBtn);
@@ -64,12 +61,7 @@ namespace GameClient.View
             RegisterTipsText = UnityUtil.FindChild<Text>(RegisterPanel.transform, nameof(RegisterTipsText)) ?? throw new ArgumentNullException(nameof(RegisterTipsText));
         }
 
-        private void OnDestroy()
-        {
-            AppFacade.Instance.RemoveMediator(nameof(LoginView));
-            AppFacade.Instance.RemoveCommand(NotifyConsts.LoginNotification.RequestLogin);
-            AppFacade.Instance.RemoveCommand(NotifyConsts.LoginNotification.RequestRegister);
-        }
+        private void OnDestroy() => AppFacade.Instance.RemoveMediator(nameof(LoginView));
         //纯UI控制的逻辑写到这里
         private void OnRegisterBtn()
         {

@@ -1,4 +1,5 @@
-﻿using GameClient.Service;
+﻿using GameClient.Common;
+using GameClient.Service;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PureMVC.Patterns.Proxy;
@@ -13,8 +14,11 @@ namespace GameClient.Model
     class MainMenuProxy : Proxy
     {
         private LocalPlayerVO _localPlayer;
+        private RequestInterceptor _changePwdInterceptor;
         public MainMenuProxy(string proxyName, object data = null) : base(proxyName, data)
         {
+            _changePwdInterceptor = new RequestInterceptor(1f);
+            _changePwdInterceptor.OnRequestStateChange += (info) => SendNotification(NotifyConsts.MainMenuNotification.ChangePasswordResult, Tuple.Create(false, info), nameof(Tuple<bool, string>));
         }
 
         public override void OnRegister()
@@ -30,23 +34,28 @@ namespace GameClient.Model
 
         public void RequestChangePassword(string oldPassword, string newPassword)
         {
-            JObject o = new JObject
+            if (_changePwdInterceptor.AllowRequest())
             {
-                { "Command", NotifyConsts.MainMenuNotification.RequestChangePassword },
+                JObject o = new JObject
                 {
-                    "Paras", new JObject
+                    { "Command", NotifyConsts.MainMenuNotification.RequestChangePassword },
                     {
-                        { "UserId",_localPlayer.UserID },
-                        { "Token",_localPlayer.Token },
-                        { "OldPassword",oldPassword },
-                        { "NewPassword",newPassword }
+                        "Paras", new JObject
+                        {
+                            { "UserId",_localPlayer.UserID },
+                            { "Token",_localPlayer.Token },
+                            { "OldPassword",oldPassword },
+                            { "NewPassword",newPassword }
+                        }
                     }
-                }
-            };
-            _ = NetworkService.Instance.SendCommandAsync(o.ToString(Formatting.None));
+                };
+                _ = NetworkService.Instance.SendCommandAsync(o.ToString(Formatting.None));
+                _ = _changePwdInterceptor.BeginWaitResponseAsync();
+            }
         }
         public void ChangePasswordResult(JObject jsonData)
         {
+            _changePwdInterceptor.EndWaitResponse();
             if (jsonData == null)
             {
                 throw new ArgumentNullException(nameof(jsonData));

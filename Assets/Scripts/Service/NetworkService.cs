@@ -31,9 +31,9 @@ namespace GameClient.Service
             get => _connectState;
             private set
             {
-                if (_connectState != value && OnConnectStateChange != null)
+                if (_connectState != value)
                 {
-                    OnConnectStateChange(value);    //触发事件
+                    OnConnectStateChange?.Invoke(value);    //触发事件
                 }
                 _connectState = value;
             }

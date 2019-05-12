@@ -25,7 +25,7 @@ namespace GameClient.Common
             set
             {
                 _vehicleName = value;
-                (gameObject.transform.Find("VehicleNameText")?.GetComponent<Text>()).text = _vehicleName;
+                gameObject.transform.Find("VehicleNameText").GetComponent<Text>().text = _vehicleName;
             }
         }
         public string VehicleType { get => _vehicleType; set => _vehicleType = value; }
@@ -35,7 +35,7 @@ namespace GameClient.Common
             set
             {
                 _attack = value;
-                (gameObject.transform.Find("AttackText")?.GetComponent<Text>()).text = _attack.ToString("F1");
+                gameObject.transform.Find("AttackText").GetComponent<Text>().text = _attack.ToString("F1");
             }
         }
         public float Motility
@@ -44,7 +44,7 @@ namespace GameClient.Common
             set
             {
                 _motility = value;
-                (gameObject.transform.Find("MotilityText")?.GetComponent<Text>()).text = _motility.ToString("F1");
+                gameObject.transform.Find("MotilityText").GetComponent<Text>().text = _motility.ToString("F1");
             }
         }
         public float Defend
@@ -53,7 +53,7 @@ namespace GameClient.Common
             set
             {
                 _defend = value;
-                (gameObject.transform.Find("DefendText")?.GetComponent<Text>()).text = _defend.ToString("F1");
+                gameObject.transform.Find("DefendText").GetComponent<Text>().text = _defend.ToString("F1");
             }
         }
         public int MaxHealth
@@ -62,7 +62,7 @@ namespace GameClient.Common
             set
             {
                 _maxHealth = value;
-                (gameObject.transform.Find("MaxHealthText")?.GetComponent<Text>()).text = _maxHealth.ToString();
+                gameObject.transform.Find("MaxHealthText").GetComponent<Text>().text = _maxHealth.ToString();
             }
         }
         public int Price
@@ -71,7 +71,7 @@ namespace GameClient.Common
             set
             {
                 _price = value;
-                (gameObject.transform.Find("PriceText")?.GetComponent<Text>()).text = _price.ToString();
+                gameObject.transform.Find("PriceText").GetComponent<Text>().text = _price.ToString();
             }
         }
         public string Intro { get => _intro; set => _intro = value; }

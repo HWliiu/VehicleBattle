@@ -64,7 +64,12 @@ namespace GameClient.Service
 
                 { NotifyConsts.GarageNotification.ChangeVehicleResult, new Lazy<Action<JObject>>(() => (_appFacade.RetrieveProxy(nameof(GarageProxy)) as GarageProxy).ChangeVehicleResult) },
 
-                { NotifyConsts.LobbyNotification.CreateRoomResult, new Lazy<Action<JObject>>(() => (_appFacade.RetrieveProxy(nameof(LobbyProxy)) as LobbyProxy).CreateRoomResult) }
+                { NotifyConsts.LobbyNotification.CreateRoomResult, new Lazy<Action<JObject>>(() => (_appFacade.RetrieveProxy(nameof(LobbyProxy)) as LobbyProxy).CreateRoomResult) },
+                { NotifyConsts.LobbyNotification.JoinRoomResult, new Lazy<Action<JObject>>(() => (_appFacade.RetrieveProxy(nameof(LobbyProxy)) as LobbyProxy).JoinRoomResult) },
+                { NotifyConsts.LobbyNotification.SearchRoomResult, new Lazy<Action<JObject>>(() => (_appFacade.RetrieveProxy(nameof(LobbyProxy)) as LobbyProxy).SearchRoomResult) },
+                { NotifyConsts.LobbyNotification.RefreshRoomListResult, new Lazy<Action<JObject>>(() => (_appFacade.RetrieveProxy(nameof(LobbyProxy)) as LobbyProxy).RefreshRoomListResult) },
+
+                { NotifyConsts.RoomNotification.NetPlayerJoinRoom, new Lazy<Action<JObject>>(() => (_appFacade.RetrieveProxy(nameof(RoomProxy)) as RoomProxy).NetPlayerJoinRoom) },
             };
     }
 }

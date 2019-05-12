@@ -9,6 +9,7 @@ namespace GameClient.Model
     {
         private PlayerManager()
         {
+            _netPlayerDict = new Dictionary<string, NetPlayerVO>();
         }
         private static readonly Lazy<PlayerManager> _instance = new Lazy<PlayerManager>(() => new PlayerManager());
         public static PlayerManager Instance => _instance.Value;

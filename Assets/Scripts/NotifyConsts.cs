@@ -79,10 +79,12 @@ namespace GameClient
             public const string RequestCreateRoom = nameof(RequestCreateRoom);
             public const string RequestSearchRoom = nameof(RequestSearchRoom);
             public const string RequestRefreshRoomList = nameof(RequestRefreshRoomList);
+            public const string RequestJoinRoom = nameof(RequestJoinRoom);
             //Mediator感兴趣的事件
             public const string CreateRoomResult = nameof(CreateRoomResult);
             public const string SearchRoomResult = nameof(SearchRoomResult);
             public const string RefreshRoomListResult = nameof(RefreshRoomListResult);
+            public const string JoinRoomResult = nameof(JoinRoomResult);
 
         }
         /// <summary>
@@ -91,7 +93,20 @@ namespace GameClient
         public static class RoomNotification
         {
             //Command命令
+            public const string RequestExitRoom = nameof(RequestExitRoom);
+            public const string RequestChangePrepareState = nameof(RequestChangePrepareState);
+            public const string RequestStartGame = nameof(RequestStartGame);
+            public const string RequestKickPlayer = nameof(RequestKickPlayer);
+            public const string RequestSendMessage = nameof(RequestSendMessage);
             //Mediator感兴趣的事件
+            public const string InitRoomInfo = nameof(InitRoomInfo);
+            public const string NetPlayerJoinRoom = nameof(NetPlayerJoinRoom);
+
+            public const string ExitRoomResult = nameof(ExitRoomResult);
+            public const string ChangePrepareStateResult = nameof(ChangePrepareStateResult);
+            public const string StartGameResult = nameof(StartGameResult);
+            public const string KickPlayerResult = nameof(KickPlayerResult);
+            public const string SendMessageResult = nameof(SendMessageResult);
         }
         /// <summary>
         /// 存储战斗模块用到的命令

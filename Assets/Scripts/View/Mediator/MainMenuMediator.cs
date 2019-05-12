@@ -1,4 +1,5 @@
 ﻿using GameClient.Common;
+using GameClient.Controller;
 using GameClient.Model;
 using GameClient.Service;
 using PureMVC.Interfaces;
@@ -87,6 +88,14 @@ namespace GameClient.View
         public override void OnRegister()
         {
             base.OnRegister();
+            AppFacade.Instance.RegisterCommand(NotifyConsts.MainMenuNotification.RequestChangePassword, () => new ChangePwdCommand());
+            AppFacade.Instance.RegisterCommand(NotifyConsts.StoreNotification.RequestStoreItemList, () => new RequestStoreItemCommand());
+            AppFacade.Instance.RegisterCommand(NotifyConsts.StoreNotification.RequestPurchaseItem, () => new PurchaseCommand());
+            AppFacade.Instance.RegisterCommand(NotifyConsts.GarageNotification.RequestChangeVehicle, () => new ChangeVehicleCommand());
+            AppFacade.Instance.RegisterProxy(new MainMenuProxy(nameof(MainMenuProxy), null));
+            AppFacade.Instance.RegisterProxy(new StoreProxy(nameof(StoreProxy), null));
+            AppFacade.Instance.RegisterProxy(new GarageProxy(nameof(GarageProxy), null));
+
             _viewComponent = (ViewComponent as MainMenuView) ?? throw new InvalidCastException(nameof(ViewComponent));
             //ChangePasswordPanel
             _viewComponent.CP_OldPasswordInput.onEndEdit.AddListener(OnOldPasswordInputEndEdit);
@@ -110,6 +119,13 @@ namespace GameClient.View
         public override void OnRemove()
         {
             base.OnRemove();
+            AppFacade.Instance.RemoveCommand(NotifyConsts.MainMenuNotification.RequestChangePassword);
+            AppFacade.Instance.RemoveCommand(NotifyConsts.StoreNotification.RequestStoreItemList);
+            AppFacade.Instance.RemoveCommand(NotifyConsts.StoreNotification.RequestPurchaseItem);
+            AppFacade.Instance.RemoveCommand(NotifyConsts.GarageNotification.RequestChangeVehicle);
+            AppFacade.Instance.RemoveProxy(nameof(MainMenuProxy));
+            AppFacade.Instance.RemoveProxy(nameof(StoreProxy));
+            AppFacade.Instance.RemoveProxy(nameof(GarageProxy));
         }
 
         #region MainMenuPanel
@@ -131,12 +147,6 @@ namespace GameClient.View
         }
         private void UpdateUserInfo(LocalPlayerVO localPlayerVO)
         {
-            if (localPlayerVO == null)
-            {
-                Debug.Log("跳过了登录");
-                return;
-            }
-
             _viewComponent.UI_UserIdText.text = localPlayerVO.UserID;
             _viewComponent.UI_UserNameText.text = localPlayerVO.UserName;
             _viewComponent.UI_UserExperienceText.text = localPlayerVO.Experience.ToString("N0");

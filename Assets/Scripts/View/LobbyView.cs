@@ -1,5 +1,4 @@
 ﻿using GameClient.Common;
-using GameClient.Controller;
 using GameClient.Model;
 using System;
 using System.Collections;
@@ -62,6 +61,10 @@ namespace GameClient.View
         public RoomMode SelectRoomMode { get; set; }
         public RoomMap SelectRoomMap { get; set; }
 
+        public event Action<string> OnJoinRoom;
+
+        private GameObject _roomItemPrefab;
+
         // Start is called before the first frame update
         void Start()
         {
@@ -72,19 +75,12 @@ namespace GameClient.View
             InitSearchRoomPanel();
             InitDialogPanel();
 
-            AppFacade.Instance.RegisterCommand(NotifyConsts.LobbyNotification.RequestCreateRoom, () => new CreateRoomCommand());
-            AppFacade.Instance.RegisterCommand(NotifyConsts.LobbyNotification.RequestRefreshRoomList, () => new RefreshRoomListCommand());
-            AppFacade.Instance.RegisterProxy(new LobbyProxy(nameof(LobbyProxy), null));
             AppFacade.Instance.RegisterMediator(new LobbyMediator(nameof(LobbyMediator), this));
+
+            _roomItemPrefab = Resources.Load<GameObject>("Prefab/RoomItem");
         }
 
-        private void OnDestroy()
-        {
-            AppFacade.Instance.RemoveCommand(nameof(NotifyConsts.LobbyNotification.RequestCreateRoom));
-            AppFacade.Instance.RemoveCommand(nameof(NotifyConsts.LobbyNotification.RequestRefreshRoomList));
-            AppFacade.Instance.RemoveProxy(nameof(LobbyProxy));
-            AppFacade.Instance.RemoveMediator(nameof(LobbyMediator));
-        }
+        private void OnDestroy() => AppFacade.Instance.RemoveMediator(nameof(LobbyMediator));
 
         private void InitLobbyPanel()
         {
@@ -176,17 +172,54 @@ namespace GameClient.View
             SR_SearchRoomTipsText.text = "";
             SearchRoomPanel.gameObject.SetActive(false);
         }
-    }
-    public enum RoomMode
-    {
-        SingleMode,
-        TeamMode
-    }
-    public enum RoomMap
-    {
-        Random,
-        Map1,
-        Map2,
-        Map3
+     
+        public void OpenRoomPanel()
+        {
+            ClearLobbyPanel();
+            LobbyPanel.gameObject.SetActive(false);
+            RoomPanel.gameObject.SetActive(true);
+
+        }
+        private void ClearRoomItems()
+        {
+            foreach (var item in RL_RoomListScrollView.content.GetComponentsInChildren<Toggle>())
+            {
+                Destroy(item.gameObject);
+            }
+        }
+        private void AddRoomItems(List<RoomVO> roomList)
+        {
+            var content = RL_RoomListScrollView.content;
+            foreach (var room in roomList)
+            {
+                GameObject item = Instantiate(_roomItemPrefab, content) as GameObject;
+                var toggle = item.GetComponent<Toggle>();
+                toggle.group = content.GetComponent<ToggleGroup>();
+                var roomItem = item.GetComponent<RoomItem>();
+                (roomItem.RoomId, roomItem.RoomName, roomItem.OwnerId, roomItem.OwnerName, roomItem.RoomMode, roomItem.RoomMap, roomItem.PlayerNum) = room;
+                toggle.onValueChanged.AddListener(isOn => { if (isOn) UpdateRoomInfo(roomItem); });
+                var joinRoomBtn = item.GetComponentInChildren<Button>();
+                joinRoomBtn.onClick.AddListener(() => OnJoinRoom?.Invoke(room.RoomID));
+            }
+            var firstToggle = content.GetComponentInChildren<Toggle>();
+            if (firstToggle != null)
+            {
+                firstToggle.isOn = true;
+            }
+        }
+        public void UpdateRoomItems(List<RoomVO> roomList)
+        {
+            ClearRoomItems();
+            AddRoomItems(roomList);
+        }
+        private void UpdateRoomInfo(RoomItem roomItem)
+        {
+            (RI_RoomIDText.text, RI_RoomNameText.text, RI_OwnerNameText.text, RI_RoomModeText.text, RI_RoomMapText.text, RI_PlayerNumText.text) = (roomItem.RoomId, roomItem.RoomName, roomItem.OwnerName, roomItem.RoomMode, roomItem.RoomMap, $"{roomItem.PlayerNum}/8");
+        }
+        private void ClearLobbyPanel()
+        {
+            ClearRoomItems();
+            (RI_RoomIDText.text, RI_RoomNameText.text, RI_OwnerNameText.text, RI_RoomModeText.text, RI_RoomMapText.text, RI_PlayerNumText.text) = ("", "", "", "", "", "");
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using GameClient.Common;
+using GameClient.Controller;
 using GameClient.Service;
 using PureMVC.Interfaces;
 using PureMVC.Patterns.Mediator;
@@ -59,6 +60,9 @@ namespace GameClient.View
         public override void OnRegister()
         {
             base.OnRegister();
+            AppFacade.Instance.RegisterCommand(NotifyConsts.LoginNotification.RequestLogin, () => new LoginCommand());
+            AppFacade.Instance.RegisterCommand(NotifyConsts.LoginNotification.RequestRegister, () => new RegisterCommand());
+
             _viewComponent = (ViewComponent as LoginView) ?? throw new InvalidCastException(nameof(ViewComponent));
 
             _viewComponent.LoginBtn.onClick.AddListener(OnLoginBtn);
@@ -77,6 +81,8 @@ namespace GameClient.View
         public override void OnRemove()
         {
             base.OnRemove();
+            AppFacade.Instance.RemoveCommand(NotifyConsts.LoginNotification.RequestLogin);
+            AppFacade.Instance.RemoveCommand(NotifyConsts.LoginNotification.RequestRegister);
         }
 
         private void HandleLoginResult(bool result, string info)
