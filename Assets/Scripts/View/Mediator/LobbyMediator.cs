@@ -163,6 +163,7 @@ namespace GameClient.View
                     await Task.Delay(1000);
                     _viewComponent.CR_CreateRoomTipsText.text = "正在进入房间";
                     await Task.Delay(1000);
+                    _viewComponent.OnCloseCreateRoomPanel();
                     _viewComponent.OpenRoomPanel();
                 }
                 _ = subsequentHandle();

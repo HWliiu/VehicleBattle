@@ -1,4 +1,7 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using GameClient.Common;
+using GameClient.Service;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using PureMVC.Patterns.Proxy;
 using System;
 using System.Collections.Generic;
@@ -11,9 +14,11 @@ namespace GameClient.Model
     class RoomProxy : Proxy
     {
         private LocalPlayerVO _localPlayer;
+        private RequestInterceptor _exitRoomInterceptor;
 
         public RoomProxy(string proxyName, object data = null) : base(proxyName, data)
         {
+            _exitRoomInterceptor = new RequestInterceptor(3f);
         }
 
         public void NetPlayerJoinRoom(JObject jsonData)
@@ -46,8 +51,66 @@ namespace GameClient.Model
             SendNotification(NotifyConsts.RoomNotification.NetPlayerJoinRoom, player, nameof(NetPlayerVO));
         }
 
-        public void RequestExitRoom() { }
-        public void ExitRoomResult(JObject jsonData) { }
+        public void RequestExitRoom()
+        {
+            if (_exitRoomInterceptor.AllowRequest())
+            {
+                JObject o = new JObject
+                {
+                    { "Command", NotifyConsts.RoomNotification.RequestExitRoom },
+                    {
+                        "Paras", new JObject
+                        {
+                            { "UserId", _localPlayer.UserID },
+                            { "Token", _localPlayer.Token }
+                        }
+                    }
+                };
+                _ = NetworkService.Instance.SendCommandAsync(o.ToString(Formatting.None));
+                _ = _exitRoomInterceptor.BeginWaitResponseAsync();
+            }
+        }
+        public void ExitRoomResult(JObject jsonData)
+        {
+            if (jsonData == null)
+            {
+                throw new ArgumentNullException(nameof(jsonData));
+            }
+
+            string result = (string)jsonData.SelectToken("Paras.Result");
+            string info = (string)jsonData.SelectToken("Paras.Info");
+            if (result == NotifyConsts.CommonNotification.Succeed)
+            {
+                string exitPlayerId = (string)jsonData.SelectToken("Paras.ExitPlayerId");
+                if (exitPlayerId == _localPlayer.UserID)
+                {
+                    _exitRoomInterceptor.EndWaitResponse();
+                    PlayerManager.Instance.RoomOwner = null;
+                    PlayerManager.Instance.RemoveAllNetPlayer();
+                    SendNotification(NotifyConsts.RoomNotification.ExitRoomResult, Tuple.Create<bool, string, string, string>(true, info, exitPlayerId, null), null);
+                }
+                else
+                {
+                    if (PlayerManager.Instance.RoomOwner.UserID == exitPlayerId)
+                    {
+                        string newOwnerId = (string)jsonData.SelectToken("Paras.NewOwnerId");
+                        PlayerManager.Instance.RoomOwner = PlayerManager.Instance.GetNetPlayer(newOwnerId);
+                        SendNotification(NotifyConsts.RoomNotification.ExitRoomResult, Tuple.Create<bool, string, string, string>(true, info, exitPlayerId, newOwnerId), null);
+                        PlayerManager.Instance.RemoveNetPlayer(exitPlayerId);
+                    }
+                    else
+                    {
+                        SendNotification(NotifyConsts.RoomNotification.ExitRoomResult, Tuple.Create<bool, string, string, string>(true, info, exitPlayerId, null), null);
+                        PlayerManager.Instance.RemoveNetPlayer(exitPlayerId);
+                    }
+                }
+            }
+            else
+            {
+                _exitRoomInterceptor.EndWaitResponse();
+                SendNotification(NotifyConsts.RoomNotification.ExitRoomResult, Tuple.Create<bool, string, string, string>(false, info, null, null), null);
+            }
+        }
 
         public void RequestChangePrepareState() { }
         public void ChangePrepareStateResult(JObject jsonData) { }
@@ -61,5 +124,15 @@ namespace GameClient.Model
         public void RequestSendMessage() { }
         public void SendMessageResult(JObject jsonData) { }
 
+        public override void OnRegister()
+        {
+            base.OnRegister();
+            _localPlayer = PlayerManager.Instance.LocalPlayer;
+        }
+
+        public override void OnRemove()
+        {
+            base.OnRemove();
+        }
     }
 }

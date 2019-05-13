@@ -70,6 +70,7 @@ namespace GameClient.Service
                 { NotifyConsts.LobbyNotification.RefreshRoomListResult, new Lazy<Action<JObject>>(() => (_appFacade.RetrieveProxy(nameof(LobbyProxy)) as LobbyProxy).RefreshRoomListResult) },
 
                 { NotifyConsts.RoomNotification.NetPlayerJoinRoom, new Lazy<Action<JObject>>(() => (_appFacade.RetrieveProxy(nameof(RoomProxy)) as RoomProxy).NetPlayerJoinRoom) },
+                { NotifyConsts.RoomNotification.ExitRoomResult, new Lazy<Action<JObject>>(() => (_appFacade.RetrieveProxy(nameof(RoomProxy)) as RoomProxy).ExitRoomResult) },
             };
     }
 }

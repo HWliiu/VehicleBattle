@@ -8,6 +8,7 @@ namespace GameClient.Common
 {
     public class PlayerItem : MonoBehaviour
     {
+        private string _userId;
         private string _userName;
         private string _level;
         private bool _prepareState;
@@ -49,5 +50,6 @@ namespace GameClient.Common
         public float Motility { get => _motility; set => _motility = value; }
         public float Defend { get => _defend; set => _defend = value; }
         public float MaxHealth { get => _maxHealth; set => _maxHealth = value; }
+        public string UserId { get => _userId; set => _userId = value; }
     }
 }

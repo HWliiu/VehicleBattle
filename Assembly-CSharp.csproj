@@ -73,6 +73,7 @@
     <Compile Include="Assets\Scripts\Controller\Command\ChangePwdCommand.cs" />
     <Compile Include="Assets\Scripts\Controller\Command\ChangeVehicleCommand.cs" />
     <Compile Include="Assets\Scripts\Controller\Command\CreateRoomCommand.cs" />
+    <Compile Include="Assets\Scripts\Controller\Command\ExitRoomCommand.cs" />
     <Compile Include="Assets\Scripts\Controller\Command\JoinRoomCommand.cs" />
     <Compile Include="Assets\Scripts\Controller\Command\LoginCommand.cs" />
     <Compile Include="Assets\Scripts\Controller\Command\LogoutCommand.cs" />
