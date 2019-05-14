@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace GameClient.Model
 {
-    public abstract class PlayerVO
+    public class PlayerVO
     {
-        protected PlayerVO(string userID, string userName, int level, VehicleVO curVehicle)
+        public PlayerVO(string userID, string userName, int level, VehicleVO curVehicle)
         {
             UserID = userID ?? throw new ArgumentNullException(nameof(userID));
             UserName = userName ?? throw new ArgumentNullException(nameof(userName));

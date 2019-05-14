@@ -9,7 +9,7 @@ namespace GameClient.Model
     {
         private PlayerManager()
         {
-            _netPlayerDict = new Dictionary<string, NetPlayerVO>();
+            _playerDict = new Dictionary<string, PlayerVO>();
         }
         private static readonly Lazy<PlayerManager> _instance = new Lazy<PlayerManager>(() => new PlayerManager());
         public static PlayerManager Instance => _instance.Value;
@@ -18,16 +18,41 @@ namespace GameClient.Model
         public PlayerVO RoomOwner { get; set; }
 
         private LocalPlayerVO _localPlayer;
-        private Dictionary<string, NetPlayerVO> _netPlayerDict;
+        private Dictionary<string, PlayerVO> _playerDict;
 
         public void InitLocalPlayer(string userID, string userName, string token, int level, int experience, int money, string registerTime, string loginTime, VehicleVO curVehicle, List<VehicleVO> vehicleList)
         {
             _localPlayer = new LocalPlayerVO(userID, userName, token, level, experience, money, registerTime, loginTime, curVehicle, vehicleList);
+            _playerDict.Add(_localPlayer.UserID, _localPlayer);
         }
 
-        public void AddNetPlayer(string userID, string userName, int level, VehicleVO curVehicle) => _netPlayerDict.Add(userID, new NetPlayerVO(userID, userName, level, curVehicle));
-        public void RemoveNetPlayer(string userId) => _netPlayerDict.Remove(userId);
-        public void RemoveAllNetPlayer() => _netPlayerDict.Clear();
-        public NetPlayerVO GetNetPlayer(string userId) => _netPlayerDict.TryGetValue(userId, out NetPlayerVO netPlayerVO) ? netPlayerVO : null;
+        public void AddNetPlayer(PlayerVO player)
+        {
+            if (player.UserID != _localPlayer.UserID)
+            {
+                _playerDict.Add(player.UserID, player);
+            }
+        }
+
+        public void RemoveNetPlayer(string userId)
+        {
+            if (userId != _localPlayer.UserID)
+            {
+                _playerDict.Remove(userId);
+            }
+        }
+
+        public void RemoveAllNetPlayer()
+        {
+            _playerDict.Clear();
+            _playerDict.Add(_localPlayer.UserID, _localPlayer);
+        }
+        public void RemoveAllPlayer()
+        {
+            _playerDict.Clear();
+            _localPlayer = null;
+        }
+
+        public PlayerVO GetPlayer(string userId) => _playerDict.TryGetValue(userId, out PlayerVO playerVO) ? playerVO : null;
     }
 }

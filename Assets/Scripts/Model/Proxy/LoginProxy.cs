@@ -166,11 +166,14 @@ namespace GameClient.Model
             string info = (string)jsonData.SelectToken("Paras.Info");
             if (result == NotifyConsts.CommonNotification.Succeed)
             {
-                SendNotification(NotifyConsts.LoginNotification.LogoutResult, Tuple.Create(true, info), nameof(Tuple<bool, string>));
+
+                bool normalLogout = (bool)jsonData.SelectToken("Paras.NormalLogout");
+                PlayerManager.Instance.RemoveAllPlayer();
+                SendNotification(NotifyConsts.LoginNotification.LogoutResult, Tuple.Create(true, info, normalLogout), nameof(Tuple<bool, string>));
             }
             else
             {
-                SendNotification(NotifyConsts.LoginNotification.LogoutResult, Tuple.Create(false, info), nameof(Tuple<bool, string>));
+                SendNotification(NotifyConsts.LoginNotification.LogoutResult, Tuple.Create(false, info, false), nameof(Tuple<bool, string>));
             }
         }
 

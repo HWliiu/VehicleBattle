@@ -26,7 +26,8 @@ namespace GameClient.Model
             _searchRoomInterceptor.OnRequestStateChange += (info) => SendNotification(NotifyConsts.LobbyNotification.SearchRoomResult, Tuple.Create(false, info), nameof(Tuple<bool, string>));
             _refreshRoomListInterceptor = new RequestInterceptor(1f);
             _refreshRoomListInterceptor.OnRequestStateChange += (info) => SendNotification(NotifyConsts.LobbyNotification.RefreshRoomListResult, Tuple.Create<bool, string, List<RoomVO>>(false, info, null), nameof(Tuple<bool, string, List<RoomVO>>));
-            _joinRoomInterceptor = new RequestInterceptor(1f);
+            _joinRoomInterceptor = new RequestInterceptor(3f);
+            _joinRoomInterceptor.OnRequestStateChange += (info) => SendNotification(NotifyConsts.LobbyNotification.JoinRoomResult, Tuple.Create(false, info), nameof(Tuple<bool, string>));
         }
 
         public void RequestCreateRoom(string roomName, string roomMode, string roomMap)
@@ -70,14 +71,19 @@ namespace GameClient.Model
                 var roomMode = (string)jsonData.SelectToken("Paras.RoomInfo.RoomMode");
                 var roomMap = (string)jsonData.SelectToken("Paras.RoomInfo.RoomMap");
                 var playerNum = (int)jsonData.SelectToken("Paras.RoomInfo.PlayerNum");
+
                 var room = new RoomVO(roomId, roomName, ownerId, ownerName, Enum.TryParse(roomMode, true, out RoomMode roomModeType) ? roomModeType : throw new InvalidCastException(nameof(roomMode)), Enum.TryParse(roomMap, true, out RoomMap roomMapType) ? roomMapType : throw new InvalidCastException(nameof(roomMap)), playerNum);
 
-                var playerList = new List<PlayerVO>();
-                playerList.Add(PlayerManager.Instance.LocalPlayer);
+                var playerList = new List<PlayerVO>
+                {
+                    PlayerManager.Instance.LocalPlayer
+                };
+                room.PlayerList = playerList;
+
                 PlayerManager.Instance.RoomOwner = PlayerManager.Instance.LocalPlayer;
 
                 SendNotification(NotifyConsts.LobbyNotification.CreateRoomResult, Tuple.Create(true, info), nameof(Tuple<bool, string>));
-                SendNotification(NotifyConsts.RoomNotification.InitRoomInfo, Tuple.Create(room, playerList), nameof(Tuple<RoomVO, List<PlayerVO>>));
+                SendNotification(NotifyConsts.RoomNotification.InitRoomInfo, room, nameof(RoomVO));
             }
             else
             {
@@ -128,7 +134,7 @@ namespace GameClient.Model
                 RoomVO room = new RoomVO(roomId, roomName, ownerId, ownerName, Enum.TryParse(roomMode, true, out RoomMode roomModeType) ? roomModeType : throw new InvalidCastException(nameof(roomMode)), Enum.TryParse(roomMap, true, out RoomMap roomMapType) ? roomMapType : throw new InvalidCastException(nameof(roomMap)), playerNum);
                 roomList.Add(room);
                 SendNotification(NotifyConsts.LobbyNotification.SearchRoomResult, Tuple.Create(true, info), nameof(Tuple<bool, string>));
-                SendNotification(NotifyConsts.LobbyNotification.RefreshRoomListResult, Tuple.Create(true, "", roomList), nameof(Tuple<bool, string, List<RoomVO>>));
+                SendNotification(NotifyConsts.LobbyNotification.RefreshRoomListResult, Tuple.Create(true, info, roomList), nameof(Tuple<bool, string, List<RoomVO>>));
             }
             else
             {
@@ -209,7 +215,6 @@ namespace GameClient.Model
         }
         public void JoinRoomResult(JObject jsonData)
         {
-            _joinRoomInterceptor.EndWaitResponse();
             if (jsonData == null)
             {
                 throw new ArgumentNullException(nameof(jsonData));
@@ -219,55 +224,103 @@ namespace GameClient.Model
             string info = (string)jsonData.SelectToken("Paras.Info");
             if (result == NotifyConsts.CommonNotification.Succeed)
             {
-                var roomId = (string)jsonData.SelectToken("Paras.RoomInfo.RoomId");
-                var roomName = (string)jsonData.SelectToken("Paras.RoomInfo.RoomName");
-                var ownerId = (string)jsonData.SelectToken("Paras.RoomInfo.OwnerId");
-                var ownerName = (string)jsonData.SelectToken("Paras.RoomInfo.OwnerName");
-                var roomMode = (string)jsonData.SelectToken("Paras.RoomInfo.RoomMode");
-                var roomMap = (string)jsonData.SelectToken("Paras.RoomInfo.RoomMap");
-                var playerNum = (int)jsonData.SelectToken("Paras.RoomInfo.PlayerNum");
-                var room = new RoomVO(roomId, roomName, ownerId, ownerName, Enum.TryParse(roomMode, true, out RoomMode roomModeType) ? roomModeType : throw new InvalidCastException(nameof(roomMode)), Enum.TryParse(roomMap, true, out RoomMap roomMapType) ? roomMapType : throw new InvalidCastException(nameof(roomMap)), playerNum);
-
-                var playerList = new List<PlayerVO>();
-                foreach (JToken jToken in jsonData.SelectTokens("Paras.RoomInfo.PlayerList").Children())
+                string joinPlayerId = (string)jsonData.SelectToken("Paras.JoinPlayerId");
+                if (joinPlayerId == _localPlayer.UserID)
                 {
-                    var playerId = (string)jToken.SelectToken("PlayerId");
-                    var playerName = (string)jToken.SelectToken("PlayerName");
-                    var playerLevel = (string)jToken.SelectToken("PlayerLevel");
-                    var prepareState = (bool)jToken.SelectToken("PrepareState");
-                    //var playerTeam = (string)jToken.SelectToken("PlayerTeam");
+                    _joinRoomInterceptor.EndWaitResponse();
+                    var roomId = (string)jsonData.SelectToken("Paras.RoomInfo.RoomId");
+                    var roomName = (string)jsonData.SelectToken("Paras.RoomInfo.RoomName");
+                    var ownerId = (string)jsonData.SelectToken("Paras.RoomInfo.OwnerId");
+                    var ownerName = (string)jsonData.SelectToken("Paras.RoomInfo.OwnerName");
+                    var roomMode = (string)jsonData.SelectToken("Paras.RoomInfo.RoomMode");
+                    var roomMap = (string)jsonData.SelectToken("Paras.RoomInfo.RoomMap");
+                    var playerNum = (int)jsonData.SelectToken("Paras.RoomInfo.PlayerNum");
+                    //获取房间信息
+                    var room = new RoomVO(roomId, roomName, ownerId, ownerName, Enum.TryParse(roomMode, true, out RoomMode roomModeType) ? roomModeType : throw new InvalidCastException(nameof(roomMode)), Enum.TryParse(roomMap, true, out RoomMap roomMapType) ? roomMapType : throw new InvalidCastException(nameof(roomMap)), playerNum);
+                    //获取玩家列表
+                    var playerList = new List<PlayerVO>();
+                    foreach (JToken jToken in jsonData.SelectTokens("Paras.RoomInfo.PlayerList").Children())
+                    {
+                        var playerId = (string)jToken.SelectToken("PlayerId");
+                        var playerName = (string)jToken.SelectToken("PlayerName");
+                        var playerLevel = (string)jToken.SelectToken("PlayerLevel");
+                        var prepareState = (bool)jToken.SelectToken("PrepareState");
+                        //var playerTeam = (string)jToken.SelectToken("PlayerTeam");
 
-                    var vehicleId = (string)jToken.SelectToken("VehicleInfo.Id");
-                    var vehicleName = (string)jToken.SelectToken("VehicleInfo.Name");
-                    var vehicleType = (string)jToken.SelectToken("VehicleInfo.Type");
-                    var vehicleAttack = (float)jToken.SelectToken("VehicleInfo.Attack");
-                    var vehicleDefend = (float)jToken.SelectToken("VehicleInfo.Defend");
-                    var vehicleMotility = (float)jToken.SelectToken("VehicleInfo.Motility");
-                    var vehicleMaxHealth = (float)jToken.SelectToken("VehicleInfo.MaxHealth");
+                        var vehicleId = (string)jToken.SelectToken("VehicleInfo.Id");
+                        var vehicleName = (string)jToken.SelectToken("VehicleInfo.Name");
+                        var vehicleType = (string)jToken.SelectToken("VehicleInfo.Type");
+                        var vehicleAttack = (float)jToken.SelectToken("VehicleInfo.Attack");
+                        var vehicleDefend = (float)jToken.SelectToken("VehicleInfo.Defend");
+                        var vehicleMotility = (float)jToken.SelectToken("VehicleInfo.Motility");
+                        var vehicleMaxHealth = (float)jToken.SelectToken("VehicleInfo.MaxHealth");
+                        //获取玩家载具信息
+                        var vehicle = new VehicleVO(vehicleId, vehicleName, Enum.TryParse(vehicleType, true, out VehicleType vt) ? vt : throw new InvalidCastException(nameof(vehicleType)), vehicleAttack, vehicleMotility, vehicleDefend, (int)vehicleMaxHealth, 0, null);
+                        //获取玩家信息
+                        var player = new PlayerVO(playerId, playerName, int.Parse(playerLevel), vehicle)
+                        {
+                            PrepareState = prepareState,
+                            //Team = Enum.TryParse(playerTeam, true, out Team team) ? team : throw new InvalidCastException(nameof(playerTeam))
+                        };
+                        playerList.Add(player); //用于界面显示
+                        if (player.UserID == ownerId)
+                        {
+                            PlayerManager.Instance.RoomOwner = player;
+                        }
+                        if (playerId != _localPlayer.UserID)
+                        {
+                            PlayerManager.Instance.AddNetPlayer(player);    //用于后台玩家数据
+                        }
+                    }
 
-                    var type = Enum.TryParse(vehicleType, true, out VehicleType vt) ? vt : throw new InvalidCastException(nameof(vehicleType));
-                    var vehicle = new VehicleVO(vehicleId, vehicleName, type, vehicleAttack, vehicleMotility, vehicleDefend, (int)vehicleMaxHealth, 0, null);
-                    var player = new NetPlayerVO(playerId, playerName, int.Parse(playerLevel), vehicle)
-                    {
-                        PrepareState = prepareState,
-                        //Team = Enum.TryParse(playerTeam, true, out Team team) ? team : throw new InvalidCastException(nameof(playerTeam))
-                    };
-                    playerList.Add(player);
-                    if (player.UserID == ownerId)
-                    {
-                        PlayerManager.Instance.RoomOwner = player;
-                    }
-                    if (playerId != _localPlayer.UserID)
-                    {
-                        PlayerManager.Instance.AddNetPlayer(playerId, playerName, int.Parse(playerLevel), vehicle);
-                    }
+                    room.PlayerList = playerList;
+
+                    SendNotification(NotifyConsts.LobbyNotification.JoinRoomResult, Tuple.Create(true, info), nameof(Tuple<bool, string>));
+                    SendNotification(NotifyConsts.RoomNotification.InitRoomInfo, room, nameof(RoomVO));
                 }
+                else
+                {
+                    var playerList = new List<PlayerVO>();
+                    PlayerVO joinPlayer = null;
+                    foreach (JToken jToken in jsonData.SelectTokens("Paras.RoomInfo.PlayerList").Children())
+                    {
+                        var playerId = (string)jToken.SelectToken("PlayerId");
+                        var playerName = (string)jToken.SelectToken("PlayerName");
+                        var playerLevel = (string)jToken.SelectToken("PlayerLevel");
+                        var prepareState = (bool)jToken.SelectToken("PrepareState");
+                        //var playerTeam = (string)jToken.SelectToken("PlayerTeam");
 
-                SendNotification(NotifyConsts.LobbyNotification.JoinRoomResult, Tuple.Create(true, info), nameof(Tuple<bool, string>));
-                SendNotification(NotifyConsts.RoomNotification.InitRoomInfo, Tuple.Create(room, playerList), nameof(Tuple<RoomVO, List<PlayerVO>>));
+                        var vehicleId = (string)jToken.SelectToken("VehicleInfo.Id");
+                        var vehicleName = (string)jToken.SelectToken("VehicleInfo.Name");
+                        var vehicleType = (string)jToken.SelectToken("VehicleInfo.Type");
+                        var vehicleAttack = (float)jToken.SelectToken("VehicleInfo.Attack");
+                        var vehicleDefend = (float)jToken.SelectToken("VehicleInfo.Defend");
+                        var vehicleMotility = (float)jToken.SelectToken("VehicleInfo.Motility");
+                        var vehicleMaxHealth = (float)jToken.SelectToken("VehicleInfo.MaxHealth");
+
+                        var vehicle = new VehicleVO(vehicleId, vehicleName, Enum.TryParse(vehicleType, true, out VehicleType t) ? t : throw new InvalidCastException(nameof(vehicleType)), vehicleAttack, vehicleMotility, vehicleDefend, (int)vehicleMaxHealth, 0, null);
+
+                        var player = new PlayerVO(playerId, playerName, int.Parse(playerLevel), vehicle)
+                        {
+                            PrepareState = prepareState,
+                            //Team = Enum.TryParse(playerTeam, true, out Team team) ? team : throw new InvalidCastException(nameof(playerTeam))
+                        };
+                        if (player.UserID == joinPlayerId)
+                        {
+                            joinPlayer = player;
+                        }
+                        playerList.Add(player);
+                    }
+                    if (joinPlayer != null)
+                    {
+                        PlayerManager.Instance.AddNetPlayer(joinPlayer);
+                    }
+                    SendNotification(NotifyConsts.RoomNotification.NewPlayerJoinRoom, Tuple.Create(joinPlayer, playerList), nameof(Tuple<PlayerVO, List<PlayerVO>>));
+                }
             }
             else
             {
+                _joinRoomInterceptor.EndWaitResponse();
                 SendNotification(NotifyConsts.LobbyNotification.JoinRoomResult, Tuple.Create(false, info), nameof(Tuple<bool, string>));
             }
         }

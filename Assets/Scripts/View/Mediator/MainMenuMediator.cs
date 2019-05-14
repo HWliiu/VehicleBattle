@@ -26,9 +26,9 @@ namespace GameClient.View
             switch (notification.Name)
             {
                 case NotifyConsts.LoginNotification.LogoutResult:
-                    if (notification.Body is Tuple<bool, string> logoutInfoTuple)
+                    if (notification.Body is Tuple<bool, string, bool> logoutInfoTuple)
                     {
-                        HandleLogoutResult(logoutInfoTuple.Item1, logoutInfoTuple.Item2);
+                        HandleLogoutResult(logoutInfoTuple.Item1, logoutInfoTuple.Item2, logoutInfoTuple.Item3);
                     }
                     break;
                 case NotifyConsts.MainMenuNotification.ChangePasswordResult:
@@ -264,19 +264,43 @@ namespace GameClient.View
             _viewComponent.DialogPanel.gameObject.SetActive(true);
         }
         private void OnConfirmLogoutBtn() => SendNotification(NotifyConsts.LoginNotification.RequestLogout, null, null);
-        private void HandleLogoutResult(bool result, string info)
+        private void HandleLogoutResult(bool result, string info, bool normalLogout)
         {
             _viewComponent.DL_DialogTipsText.text = info;
             if (result)
             {
-                async Task subsequentHandle()
+                if (normalLogout)
                 {
-                    await Task.Delay(500);
-                    _viewComponent.DL_DialogTipsText.text = "正在返回登录界面";
-                    await Task.Delay(500);
-                    UnityUtil.LoadScene(NotifyConsts.SceneName.LoginScene);
+                    async Task subsequentHandle()
+                    {
+                        await Task.Delay(500);
+                        _viewComponent.DL_DialogTipsText.text = "正在返回登录界面";
+                        await Task.Delay(500);
+                        UnityUtil.LoadScene(NotifyConsts.SceneName.LoginScene);
+                    }
+                    _ = subsequentHandle();
                 }
-                _ = subsequentHandle();
+                else
+                {
+                    _viewComponent.DL_DialogTitleText.text = "";
+                    _viewComponent.DL_DialogTipsText.text = info;
+                    _viewComponent.DL_DialogConfirmBtn.onClick.AddListener(backToLoginPanel);
+                    _viewComponent.DL_DialogCancelBtn.onClick.AddListener(backToLoginPanel);
+                    _viewComponent.DialogPanel.gameObject.SetActive(true);
+
+                    void backToLoginPanel()
+                    {
+                        _viewComponent.DL_DialogCancelBtn.onClick.AddListener(_viewComponent.OnDialogCancelBtn);
+                        _ = subsequentHandle();
+                    }
+                    async Task subsequentHandle()
+                    {
+                        _viewComponent.DL_DialogTipsText.text = "正在返回登录界面";
+                        await Task.Delay(1000);
+                        _viewComponent.OnDialogCancelBtn();
+                        UnityUtil.LoadScene(NotifyConsts.SceneName.LoginScene);
+                    }
+                }
             }
         }
         #endregion

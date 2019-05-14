@@ -100,7 +100,7 @@ namespace GameClient
             public const string RequestSendMessage = nameof(RequestSendMessage);
             //Mediator感兴趣的事件
             public const string InitRoomInfo = nameof(InitRoomInfo);
-            public const string NetPlayerJoinRoom = nameof(NetPlayerJoinRoom);
+            public const string NewPlayerJoinRoom = nameof(NewPlayerJoinRoom);
 
             public const string ExitRoomResult = nameof(ExitRoomResult);
             public const string ChangePrepareStateResult = nameof(ChangePrepareStateResult);

@@ -117,7 +117,7 @@ namespace GameClient.View
             CR_CreateRoomTipsText = UnityUtil.FindChild<Text>(CreateRoomPanel.transform, nameof(CR_CreateRoomTipsText)) ?? throw new ArgumentNullException(nameof(CR_CreateRoomTipsText));
             CR_ConfirmCreateBtn = UnityUtil.FindChild<Button>(CreateRoomPanel.transform, nameof(CR_ConfirmCreateBtn)) ?? throw new ArgumentNullException(nameof(CR_ConfirmCreateBtn));
 
-            CR_BackLobbyBtn.onClick.AddListener(OnCloseCreateRoomPanel);
+            CR_BackLobbyBtn.onClick.AddListener(CloseCreateRoomPanel);
             CR_SingleModeToggle.onValueChanged.AddListener(isOn => { if (isOn) SelectRoomMode = RoomMode.SingleMode; });
             CR_TeamModeToggle.onValueChanged.AddListener(isOn => { if (isOn) SelectRoomMode = RoomMode.TeamMode; });
             CR_MapDropdown.onValueChanged.AddListener(index =>
@@ -140,6 +140,7 @@ namespace GameClient.View
                         break;
                 }
             });
+            SelectRoomMap = RoomMap.Map1;
         }
         private void InitSearchRoomPanel()
         {
@@ -148,7 +149,7 @@ namespace GameClient.View
             SR_BackLobbyBtn = UnityUtil.FindChild<Button>(SearchRoomPanel.transform, nameof(SR_BackLobbyBtn)) ?? throw new ArgumentNullException(nameof(SR_BackLobbyBtn));
             SR_SearchRoomInput = UnityUtil.FindChild<InputField>(SearchRoomPanel.transform, nameof(SR_SearchRoomInput)) ?? throw new ArgumentNullException(nameof(SR_SearchRoomInput));
 
-            SR_BackLobbyBtn.onClick.AddListener(OnCloseSearchRoomPanel);
+            SR_BackLobbyBtn.onClick.AddListener(CloseSearchRoomPanel);
         }
         private void InitDialogPanel()
         {
@@ -158,7 +159,7 @@ namespace GameClient.View
             DL_DialogCancelBtn = UnityUtil.FindChild<Button>(DialogPanel.transform, nameof(DL_DialogCancelBtn)) ?? throw new ArgumentNullException(nameof(DL_DialogCancelBtn));
         }
 
-        public void OnCloseCreateRoomPanel()
+        public void CloseCreateRoomPanel()
         {
             CR_CreateRoomTipsText.text = "";
             CR_MapDropdown.value = 0;
@@ -166,13 +167,13 @@ namespace GameClient.View
             CR_SingleModeToggle.isOn = true;
             CreateRoomPanel.gameObject.SetActive(false);
         }
-        public void OnCloseSearchRoomPanel()
+        public void CloseSearchRoomPanel()
         {
             SR_SearchRoomInput.text = "";
             SR_SearchRoomTipsText.text = "";
             SearchRoomPanel.gameObject.SetActive(false);
         }
-     
+
         public void OpenRoomPanel()
         {
             ClearLobbyPanel();
@@ -182,6 +183,7 @@ namespace GameClient.View
         }
         private void ClearRoomItems()
         {
+            RL_LobbyTipsText.text = "";
             foreach (var item in RL_RoomListScrollView.content.GetComponentsInChildren<Toggle>())
             {
                 Destroy(item.gameObject);
@@ -197,7 +199,7 @@ namespace GameClient.View
                 toggle.group = content.GetComponent<ToggleGroup>();
                 var roomItem = item.GetComponent<RoomItem>();
                 (roomItem.RoomId, roomItem.RoomName, roomItem.OwnerId, roomItem.OwnerName, roomItem.RoomMode, roomItem.RoomMap, roomItem.PlayerNum) = room;
-                toggle.onValueChanged.AddListener(isOn => { if (isOn) UpdateRoomInfo(roomItem); });
+                toggle.onValueChanged.AddListener(isOn => { if (isOn) SetRoomInfo(roomItem); });
                 var joinRoomBtn = item.GetComponentInChildren<Button>();
                 joinRoomBtn.onClick.AddListener(() => OnJoinRoom?.Invoke(room.RoomID));
             }
@@ -212,14 +214,21 @@ namespace GameClient.View
             ClearRoomItems();
             AddRoomItems(roomList);
         }
-        private void UpdateRoomInfo(RoomItem roomItem)
+        private void SetRoomInfo(RoomItem roomItem)
         {
-            (RI_RoomIDText.text, RI_RoomNameText.text, RI_OwnerNameText.text, RI_RoomModeText.text, RI_RoomMapText.text, RI_PlayerNumText.text) = (roomItem.RoomId, roomItem.RoomName, roomItem.OwnerName, roomItem.RoomMode, roomItem.RoomMap, $"{roomItem.PlayerNum}/8");
+            if (roomItem != null)
+            {
+                (RI_RoomIDText.text, RI_RoomNameText.text, RI_OwnerNameText.text, RI_RoomModeText.text, RI_RoomMapText.text, RI_PlayerNumText.text) = (roomItem.RoomId, roomItem.RoomName, roomItem.OwnerName, roomItem.RoomMode, roomItem.RoomMap, $"{roomItem.PlayerNum}/8");
+            }
+            else
+            {
+                (RI_RoomIDText.text, RI_RoomNameText.text, RI_OwnerNameText.text, RI_RoomModeText.text, RI_RoomMapText.text, RI_PlayerNumText.text) = ("", "", "", "", "", "");
+            }
         }
         private void ClearLobbyPanel()
         {
             ClearRoomItems();
-            (RI_RoomIDText.text, RI_RoomNameText.text, RI_OwnerNameText.text, RI_RoomModeText.text, RI_RoomMapText.text, RI_PlayerNumText.text) = ("", "", "", "", "", "");
+            SetRoomInfo(null);
         }
     }
 }

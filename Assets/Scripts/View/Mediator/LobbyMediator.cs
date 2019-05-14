@@ -93,12 +93,12 @@ namespace GameClient.View
 
         public override void OnRemove()
         {
+            base.OnRemove();
             AppFacade.Instance.RemoveCommand(nameof(NotifyConsts.LobbyNotification.RequestCreateRoom));
             AppFacade.Instance.RemoveCommand(nameof(NotifyConsts.LobbyNotification.RequestSearchRoom));
             AppFacade.Instance.RemoveCommand(nameof(NotifyConsts.LobbyNotification.RequestRefreshRoomList));
             AppFacade.Instance.RemoveCommand(nameof(NotifyConsts.LobbyNotification.RequestJoinRoom));
             AppFacade.Instance.RemoveProxy(nameof(LobbyProxy));
-            base.OnRemove();
         }
         #region RoomListPanel
         private void OnRefreshRoomListBtn() => SendNotification(NotifyConsts.LobbyNotification.RequestRefreshRoomList, null, null);
@@ -114,9 +114,9 @@ namespace GameClient.View
         }
         private void HandleJoinRoomResult(bool result, string info)
         {
-            _viewComponent.RL_LobbyTipsText.text = info;
             if (result)
             {
+                _viewComponent.RL_LobbyTipsText.text = "加入房间成功";
                 async Task subsequentHandle()
                 {
                     await Task.Delay(1000);
@@ -125,6 +125,10 @@ namespace GameClient.View
                     _viewComponent.OpenRoomPanel();
                 }
                 _ = subsequentHandle();
+            }
+            else
+            {
+                _viewComponent.RL_LobbyTipsText.text = info;
             }
         }
         #endregion
@@ -163,7 +167,7 @@ namespace GameClient.View
                     await Task.Delay(1000);
                     _viewComponent.CR_CreateRoomTipsText.text = "正在进入房间";
                     await Task.Delay(1000);
-                    _viewComponent.OnCloseCreateRoomPanel();
+                    _viewComponent.CloseCreateRoomPanel();
                     _viewComponent.OpenRoomPanel();
                 }
                 _ = subsequentHandle();
@@ -190,7 +194,7 @@ namespace GameClient.View
                 async Task subsequentHandle()
                 {
                     await Task.Delay(500);
-                    _viewComponent.OnCloseSearchRoomPanel();
+                    _viewComponent.CloseSearchRoomPanel();
                 }
                 _ = subsequentHandle();
             }

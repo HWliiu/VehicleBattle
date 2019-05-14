@@ -58,6 +58,7 @@ namespace GameClient.View
         #endregion
 
         private GameObject _playerItemPrefab;
+        private GameObject _messageBarPrefab;
 
         public event Action<string> OnKick;
 
@@ -144,6 +145,7 @@ namespace GameClient.View
 
             AppFacade.Instance.RegisterMediator(new RoomMediator(nameof(RoomMediator), this));
             _playerItemPrefab = Resources.Load<GameObject>("Prefab/PlayerItem");
+            _messageBarPrefab = Resources.Load<GameObject>("Prefab/MessageBar");
             _playerManagerInstance = PlayerManager.Instance;
         }
 
@@ -155,110 +157,66 @@ namespace GameClient.View
 
         private void OnDestroy() => AppFacade.Instance.RemoveMediator(nameof(RoomMediator));
 
-        public void InitRoomInfo(RoomVO room, List<PlayerVO> playerList)
+        public void InitRoomInfo(RoomVO room)
         {
             SetRoomInfo(room);
 
             switch (room.RoomMode)
             {
                 case RoomMode.SingleMode:
-                    InitSingleModePlayerList(playerList);
+                    UpdatePlayerList(room.PlayerList);
                     break;
                 case RoomMode.TeamMode:
-                    //InitTeamModePlayerList(room.OwnerId, playerList);
                     break;
                 default:
                     break;
             }
         }
-        private void InitSingleModePlayerList(List<PlayerVO> playerList)
+        public void UpdatePlayerList(List<PlayerVO> playerList)
         {
+            RemoveAllPlayerItem();
             foreach (var player in playerList)
             {
                 AddPlayerItem(player);
             }
         }
-        //private void InitTeamModePlayerList(List<PlayerVO> playerList)
-        //{
-        //    TeamModeExtraPanel.gameObject.SetActive(true);
-        //    var userId = PlayerManager.Instance.LocalPlayer.UserID;
-        //    foreach (var player in playerList)
-        //    {
-        //        Transform grid = null;
-        //        switch (player.Team)
-        //        {
-        //            case Team.None:
-        //                throw new Exception();
-        //            case Team.Red:
-        //                grid = FindEmptyGrid(PL_PlayerList1);
-        //                break;
-        //            case Team.Blue:
-        //                grid = FindEmptyGrid(PL_PlayerList2);
-        //                break;
-        //            default:
-        //                break;
-        //        }
-        //        if (grid == null) throw new Exception();
-        //        GameObject item = Instantiate(_playerItemPrefab, grid) as GameObject;
-        //        var playerItem = item.GetComponent<PlayerItem>();
-        //        (playerItem.UserName, playerItem.Level, playerItem.PrepareState, playerItem.VehicleName, playerItem.Attack, playerItem.Motility, playerItem.Defend, playerItem.MaxHealth)
-        //            = (player.UserName, player.Level.ToString(), player.PrepareState, player.CurVehicle.VehicleName, player.CurVehicle.Attack.ToString(), player.CurVehicle.Motility.ToString(), player.CurVehicle.Defend.ToString(), player.CurVehicle.MaxHealth.ToString());
-        //        var kickBtn = item.GetComponentInChildren<Button>(true);
-        //        kickBtn.onClick.AddListener(() => OnKick(player.UserID));
-        //        if (_isOwner && player.UserID != userId)
-        //        {
-        //            kickBtn.gameObject.SetActive(true);
-        //        }
-        //    }
-        //}
-        public void AddPlayerItem(PlayerVO player)
+        private void AddPlayerItem(PlayerVO player)
         {
             var grid = FindEmptyGrid(PL_PlayerList1);
             if (grid == null) grid = FindEmptyGrid(PL_PlayerList2);
-            if (grid == null) throw new Exception();
-            GameObject item = Instantiate(_playerItemPrefab, grid) as GameObject;
+            if (grid == null) throw new Exception("no empty grid");
+            GameObject item = Instantiate(_playerItemPrefab, grid) as GameObject;   //TODO: 改成隐藏/显示的方案 不需要频繁创建/销毁
             var playerItem = item.GetComponent<PlayerItem>();
 
             (playerItem.UserId, playerItem.UserName, playerItem.Level, playerItem.PrepareState, playerItem.VehicleName, playerItem.Attack, playerItem.Motility, playerItem.Defend, playerItem.MaxHealth)
                 = (player.UserID, player.UserName, player.Level.ToString(), player.PrepareState, player.CurVehicle.VehicleName, player.CurVehicle.Attack, player.CurVehicle.Motility, player.CurVehicle.Defend, player.CurVehicle.MaxHealth);
 
             var kickBtn = item.GetComponentInChildren<Button>(true);
-            kickBtn.onClick.AddListener(() => OnKick(player.UserID));
-            UpdateKickBtnDisplay();
+            kickBtn.onClick.AddListener(() => OnKick?.Invoke(player.UserID));
+            //显示踢除按钮
+            if (_playerManagerInstance.RoomOwner.UserID == _playerManagerInstance.LocalPlayer.UserID && playerItem.UserId != _playerManagerInstance.LocalPlayer.UserID)
+            {
+                kickBtn.gameObject.SetActive(true);
+            }
+            //显示房主标签
             if (_playerManagerInstance.RoomOwner.UserID == player.UserID)
             {
                 item.transform.Find("RoomOwnerText").GetComponent<Text>().gameObject.SetActive(true);
-            }
-        }
-        public void RemovePlayerItem(string playerId)
-        {
-            foreach (var playerItem in PL_PlayerList1.GetComponentsInChildren<PlayerItem>())
-            {
-                if (playerItem.UserId == playerId)
-                {
-                    Destroy(playerItem.gameObject);
-                    return;
-                }
-            }
-            foreach (var playerItem in PL_PlayerList2.GetComponentsInChildren<PlayerItem>())
-            {
-                if (playerItem.UserId == playerId)
-                {
-                    Destroy(playerItem.gameObject);
-                    return;
-                }
+                item.transform.parent.GetComponent<Toggle>().isOn = true;
             }
         }
         private void RemoveAllPlayerItem()
         {
             foreach (var playerItem in PL_PlayerList1.GetComponentsInChildren<PlayerItem>())
             {
-                Destroy(playerItem.gameObject);
+                DestroyImmediate(playerItem.gameObject);
             }
             foreach (var playerItem in PL_PlayerList2.GetComponentsInChildren<PlayerItem>())
             {
-                Destroy(playerItem.gameObject);
+                DestroyImmediate(playerItem.gameObject);
             }
+            PL_RoomTipsText.text = "";
+            RP_PrepareBtn.GetComponentInChildren<Text>().text = "准备";
         }
         public GameObject FindPlayerItem(string playerId)
         {
@@ -289,34 +247,12 @@ namespace GameClient.View
             }
             return null;
         }
-        public void UpdateKickBtnDisplay()
-        {
-            GameObject button;
-            foreach (var playerItem in PL_PlayerList1.GetComponentsInChildren<PlayerItem>())
-            {
-                button = playerItem.GetComponentInChildren<Button>(true).gameObject;
-                button.SetActive(false);
-                if (_playerManagerInstance.RoomOwner.UserID == _playerManagerInstance.LocalPlayer.UserID && playerItem.UserId != _playerManagerInstance.LocalPlayer.UserID)
-                {
-                    button.SetActive(true);
-                }
-            }
-            foreach (var playerItem in PL_PlayerList2.GetComponentsInChildren<PlayerItem>())
-            {
-                button = playerItem.GetComponentInChildren<Button>(true).gameObject;
-                button.SetActive(false);
-                if (_playerManagerInstance.RoomOwner.UserID == _playerManagerInstance.LocalPlayer.UserID && playerItem.UserId != _playerManagerInstance.LocalPlayer.UserID)
-                {
-                    button.SetActive(true);
-                }
-            }
-        }
         private void ClearRoomPanel()
         {
             SetPlayerInfo(null);
             SetRoomInfo(null);
             RemoveAllPlayerItem();
-            ClearAllMessageItem();
+            RemoveAllMessageItem();
         }
 
         private void OnSelectPlayerChange(Toggle toggle)
@@ -366,7 +302,16 @@ namespace GameClient.View
             }
         }
 
-        private void ClearAllMessageItem()
+        public void AddMessageItem(string playerName, string message)
+        {
+            GameObject messageBar = Instantiate(_messageBarPrefab, CP_RoomMessageScrollView.content) as GameObject;
+            messageBar.transform.Find("PlayerNameText").GetComponent<Text>().text = $"{playerName}:";
+            messageBar.transform.Find("PlayerMessageText").GetComponent<Text>().text = message;
+            StartCoroutine(resetScroll());
+            IEnumerator resetScroll() { yield return new WaitForSeconds(0.2f); CP_RoomMessageScrollView.verticalScrollbar.value = 0f; };
+
+        }
+        private void RemoveAllMessageItem()
         {
             var content = CP_RoomMessageScrollView.content;
             for (int i = 0; i < content.transform.childCount; i++)

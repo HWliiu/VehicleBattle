@@ -31,6 +31,7 @@ namespace GameClient.Model
         {
             (roomID, roomName, ownerId, ownerName, roomMode, roomMap, playerNum) = (RoomID, RoomName, OwnerId, OwnerName, RoomMode.ToString(), RoomMap.ToString(), PlayerNum.ToString());
         }
+        public List<PlayerVO> PlayerList { get; set; }
     }
     public enum RoomMode
     {

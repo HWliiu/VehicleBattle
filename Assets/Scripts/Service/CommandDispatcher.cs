@@ -69,8 +69,11 @@ namespace GameClient.Service
                 { NotifyConsts.LobbyNotification.SearchRoomResult, new Lazy<Action<JObject>>(() => (_appFacade.RetrieveProxy(nameof(LobbyProxy)) as LobbyProxy).SearchRoomResult) },
                 { NotifyConsts.LobbyNotification.RefreshRoomListResult, new Lazy<Action<JObject>>(() => (_appFacade.RetrieveProxy(nameof(LobbyProxy)) as LobbyProxy).RefreshRoomListResult) },
 
-                { NotifyConsts.RoomNotification.NetPlayerJoinRoom, new Lazy<Action<JObject>>(() => (_appFacade.RetrieveProxy(nameof(RoomProxy)) as RoomProxy).NetPlayerJoinRoom) },
                 { NotifyConsts.RoomNotification.ExitRoomResult, new Lazy<Action<JObject>>(() => (_appFacade.RetrieveProxy(nameof(RoomProxy)) as RoomProxy).ExitRoomResult) },
+                { NotifyConsts.RoomNotification.ChangePrepareStateResult, new Lazy<Action<JObject>>(() => (_appFacade.RetrieveProxy(nameof(RoomProxy)) as RoomProxy).ChangePrepareStateResult) },
+                { NotifyConsts.RoomNotification.KickPlayerResult, new Lazy<Action<JObject>>(() => (_appFacade.RetrieveProxy(nameof(RoomProxy)) as RoomProxy).KickPlayerResult) },
+                { NotifyConsts.RoomNotification.SendMessageResult, new Lazy<Action<JObject>>(() => (_appFacade.RetrieveProxy(nameof(RoomProxy)) as RoomProxy).SendMessageResult) },
+                { NotifyConsts.RoomNotification.StartGameResult, new Lazy<Action<JObject>>(() => (_appFacade.RetrieveProxy(nameof(RoomProxy)) as RoomProxy).StartGameResult) }
             };
     }
 }

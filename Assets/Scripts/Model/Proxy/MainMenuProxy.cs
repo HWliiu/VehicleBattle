@@ -65,6 +65,7 @@ namespace GameClient.Model
             string info = (string)jsonData.SelectToken("Paras.Info");
             if (result == NotifyConsts.CommonNotification.Succeed)
             {
+                PlayerManager.Instance.RemoveAllPlayer();
                 SendNotification(NotifyConsts.MainMenuNotification.ChangePasswordResult, Tuple.Create(true, info), nameof(Tuple<bool, string>));
             }
             else
