@@ -64,13 +64,11 @@ namespace GameClient.Model
         }
         public override void OnRegister()
         {
-            base.OnRegister();
             _localPlayer = PlayerManager.Instance.LocalPlayer;
+
+            CommandDispatcher.Instance.CommandDict.Add(NotifyConsts.GarageNotification.ChangeVehicleResult, ChangeVehicleResult);
         }
 
-        public override void OnRemove()
-        {
-            base.OnRemove();
-        }
+        public override void OnRemove() => CommandDispatcher.Instance.CommandDict.Remove(NotifyConsts.GarageNotification.ChangeVehicleResult);
     }
 }

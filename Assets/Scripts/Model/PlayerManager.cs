@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace GameClient.Model
@@ -54,5 +55,6 @@ namespace GameClient.Model
         }
 
         public PlayerVO GetPlayer(string userId) => _playerDict.TryGetValue(userId, out PlayerVO playerVO) ? playerVO : null;
+        public string[] PlayerOrder;
     }
 }

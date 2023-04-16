@@ -114,7 +114,15 @@ namespace GameClient
         public static class BattleNotification
         {
             //Command命令
+            public const string UpLoadTransformState = nameof(UpLoadTransformState);
+            public const string UpLoadFireState = nameof(UpLoadFireState);
+            public const string UpLoadHealthState = nameof(UpLoadHealthState);
             //Mediator感兴趣的事件
+            public const string UpdateTransformState = nameof(UpdateTransformState);
+            public const string UpdateFireState = nameof(UpdateFireState);
+            public const string UpdateHealthState = nameof(UpdateHealthState);
+            public const string PlayerExit = nameof(PlayerExit);
+            public const string EndGame = nameof(EndGame);
         }
         /// <summary>
         /// 储存场景名称
@@ -125,6 +133,9 @@ namespace GameClient
             public const string LoadingScene = nameof(LoadingScene);
             public const string MainMenuScene = nameof(MainMenuScene);
             public const string RoomScene = nameof(RoomScene);
+            public const string BattleScene1 = nameof(BattleScene1);
+            public const string BattleScene2 = nameof(BattleScene2);
+            public const string BattleScene3 = nameof(BattleScene3);
         }
     }
 }

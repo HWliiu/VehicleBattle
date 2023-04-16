@@ -34,7 +34,7 @@ namespace GameClient.View
         //ViewComponent只负责UI的绘制，而其他事情，包括事件的绑定统统交给Mediator来做
         private void Start()    //所有的Mediator以及非全局的Command,Proxy在Start()时注册,OnDestroy()时移除
         {
-            Singleton<Main>.GetInstance();
+            UnitySingleton<Main>.GetInstance();
             InitComponent();
 
             AppFacade.Instance.RegisterMediator(new LoginMediator(nameof(LoginView), this));

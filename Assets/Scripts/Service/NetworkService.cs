@@ -215,18 +215,20 @@ namespace GameClient.Service
     class RecvBufQueue
     {
         private List<byte> _dataList;
-        public ManualResetEventSlim MessageComeEvent { get; private set; }
+        //public ManualResetEventSlim MessageComeEvent { get; private set; }
+        public bool MessageFlag { get; set; }
         public RecvBufQueue(int size)
         {
             _dataList = new List<byte>(size);
-            MessageComeEvent = new ManualResetEventSlim(false);
+            //MessageComeEvent = new ManualResetEventSlim(false);
         }
         public void Enqueue(byte[] data)
         {
             lock (_dataList)
             {
                 _dataList.AddRange(data);
-                MessageComeEvent.Set();
+                //MessageComeEvent.Set();
+                MessageFlag = true;
             }
         }
         public string Dequeue()
@@ -238,7 +240,8 @@ namespace GameClient.Service
                 int packLen = BitConverter.ToInt32(packHead, 0);
                 if (_dataList.Count < packLen + 4)  //残包
                 {
-                    MessageComeEvent.Reset();
+                    //MessageComeEvent.Reset();
+                    MessageFlag = false;
                     return null;
                 }
                 else
@@ -254,7 +257,8 @@ namespace GameClient.Service
             }
             else
             {
-                MessageComeEvent.Reset();
+                //MessageComeEvent.Reset();
+                MessageFlag = false;
                 return null;
             }
         }

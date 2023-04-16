@@ -327,13 +327,20 @@ namespace GameClient.Model
 
         public override void OnRegister()
         {
-            base.OnRegister();
             _localPlayer = PlayerManager.Instance.LocalPlayer;
+
+            CommandDispatcher.Instance.CommandDict.Add(NotifyConsts.LobbyNotification.CreateRoomResult, CreateRoomResult);
+            CommandDispatcher.Instance.CommandDict.Add(NotifyConsts.LobbyNotification.SearchRoomResult, SearchRoomResult);
+            CommandDispatcher.Instance.CommandDict.Add(NotifyConsts.LobbyNotification.RefreshRoomListResult, RefreshRoomListResult);
+            CommandDispatcher.Instance.CommandDict.Add(NotifyConsts.LobbyNotification.JoinRoomResult, JoinRoomResult);
         }
 
         public override void OnRemove()
         {
-            base.OnRemove();
+            CommandDispatcher.Instance.CommandDict.Remove(NotifyConsts.LobbyNotification.CreateRoomResult);
+            CommandDispatcher.Instance.CommandDict.Remove(NotifyConsts.LobbyNotification.SearchRoomResult);
+            CommandDispatcher.Instance.CommandDict.Remove(NotifyConsts.LobbyNotification.RefreshRoomListResult);
+            CommandDispatcher.Instance.CommandDict.Remove(NotifyConsts.LobbyNotification.JoinRoomResult);
         }
     }
 }

@@ -95,6 +95,7 @@ namespace GameClient.Model
                 SendNotification(NotifyConsts.LoginNotification.LoginResult, Tuple.Create(false, info), nameof(Tuple<bool, string>));
             }
         }
+
         public void RequestRegister(string username, string password)
         {
             if (_registerInterceptor.AllowRequest())
@@ -114,7 +115,6 @@ namespace GameClient.Model
                 _ = _registerInterceptor.BeginWaitResponseAsync();
             }
         }
-
         public void RegisterResult(JObject jsonData)
         {
             _registerInterceptor.EndWaitResponse();
@@ -154,7 +154,6 @@ namespace GameClient.Model
                 _ = _logoutInterceptor.BeginWaitResponseAsync();
             }
         }
-
         public void LogoutResult(JObject jsonData)
         {
             _logoutInterceptor.EndWaitResponse();
@@ -179,12 +178,16 @@ namespace GameClient.Model
 
         public override void OnRegister()
         {
-            base.OnRegister();
+            CommandDispatcher.Instance.CommandDict.Add(NotifyConsts.LoginNotification.LoginResult, LoginResult);
+            CommandDispatcher.Instance.CommandDict.Add(NotifyConsts.LoginNotification.RegisterResult, RegisterResult);
+            CommandDispatcher.Instance.CommandDict.Add(NotifyConsts.LoginNotification.LogoutResult, LogoutResult);
         }
 
         public override void OnRemove()
         {
-            base.OnRemove();
+            CommandDispatcher.Instance.CommandDict.Remove(NotifyConsts.LoginNotification.LoginResult);
+            CommandDispatcher.Instance.CommandDict.Remove(NotifyConsts.LoginNotification.RegisterResult);
+            CommandDispatcher.Instance.CommandDict.Remove(NotifyConsts.LoginNotification.LogoutResult);
         }
     }
 }

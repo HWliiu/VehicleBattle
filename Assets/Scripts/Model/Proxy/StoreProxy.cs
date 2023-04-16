@@ -117,13 +117,16 @@ namespace GameClient.Model
 
         public override void OnRegister()
         {
-            base.OnRegister();
             _localPlayer = PlayerManager.Instance.LocalPlayer;
+
+            CommandDispatcher.Instance.CommandDict.Add(NotifyConsts.StoreNotification.PurchaseItemResult, PurchaseItemResult);
+            CommandDispatcher.Instance.CommandDict.Add(NotifyConsts.StoreNotification.StoreItemListResult, StoreItemListResult);
         }
 
         public override void OnRemove()
         {
-            base.OnRemove();
+            CommandDispatcher.Instance.CommandDict.Remove(NotifyConsts.StoreNotification.PurchaseItemResult);
+            CommandDispatcher.Instance.CommandDict.Remove(NotifyConsts.StoreNotification.StoreItemListResult);
         }
     }
 }

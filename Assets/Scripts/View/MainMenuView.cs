@@ -292,7 +292,7 @@ namespace GameClient.View
         }
         public void InitStoreItemList(List<VehicleVO> vehicleList)
         {
-            var storeItemPreb = Resources.Load<GameObject>("Prefab/StoreItem");
+            var storeItemPreb = Resources.Load<GameObject>("Prefabs/StoreItem");
             for (int i = 0; i < vehicleList.Count; i++)
             {
                 var item = AddItemToScrollView(vehicleList[i], storeItemPreb, ST_ScrollView);
@@ -339,7 +339,7 @@ namespace GameClient.View
         }
         public void InitGarageItemList(List<VehicleVO> vehicleList)
         {
-            var garageItemPreb = Resources.Load<GameObject>("Prefab/GarageItem");
+            var garageItemPreb = Resources.Load<GameObject>("Prefabs/GarageItem");
             foreach (var vehicle in vehicleList)
             {
                 var item = AddItemToScrollView(vehicle, garageItemPreb, GR_ScrollView);
@@ -350,7 +350,7 @@ namespace GameClient.View
         }
         public void AddGarageItem(VehicleVO vehicle)
         {
-            var garageItemPrefab = Resources.Load<GameObject>("Prefab/GarageItem");
+            var garageItemPrefab = Resources.Load<GameObject>("Prefabs/GarageItem");
             var item = AddItemToScrollView(vehicle, garageItemPrefab, GR_ScrollView);
             item.GetComponent<Toggle>().onValueChanged.AddListener(isOn => { if (isOn) SelectGarageItem = item.GetComponent<VehicleItem>(); });
         }

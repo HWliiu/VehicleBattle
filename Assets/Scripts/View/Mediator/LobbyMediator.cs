@@ -105,12 +105,16 @@ namespace GameClient.View
         private void OnJoinRoomBtn(string roomId) => SendNotification(NotifyConsts.LobbyNotification.RequestJoinRoom, roomId, nameof(String));
         private void HandleRefreshRoomListResult(bool result, string info, List<RoomVO> roomList)
         {
-            _viewComponent.RL_LobbyTipsText.text = info;
             if (result)
             {
                 _viewComponent.UpdateRoomItems(roomList);
+                _viewComponent.RL_LobbyTipsText.text = info;
+                Task.Delay(TimeSpan.FromSeconds(3)).ContinueWith(t => _viewComponent.RL_LobbyTipsText.text = "", TaskScheduler.FromCurrentSynchronizationContext());
             }
-            Task.Delay(TimeSpan.FromSeconds(3)).ContinueWith(t => _viewComponent.RL_LobbyTipsText.text = "", TaskScheduler.FromCurrentSynchronizationContext());
+            else
+            {
+                _viewComponent.RL_LobbyTipsText.text = info;
+            }
         }
         private void HandleJoinRoomResult(bool result, string info)
         {

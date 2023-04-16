@@ -10,6 +10,7 @@ namespace GameClient
 {
     public class Main : MonoBehaviour
     {
+        private Coroutine _dispatchCoroutine;
         private void Awake()
         {
             //启动整个PureMVC框架
@@ -26,12 +27,12 @@ namespace GameClient
             NetworkService.Instance.OnConnectStateChange += (connectState) => context.Post((state) => AppFacade.Instance.SendNotification(NotifyConsts.CommonNotification.UpdateConnState, connectState, nameof(ConnectState)), null);     //确保SendNotification的调用在主线程
             NetworkService.Instance.Start();
             yield return null;
-            //单独开一个线程分发命令
-            Task.Factory.StartNew(new CommandDispatcher().StartDispatch, context, TaskCreationOptions.LongRunning);   //LongRunning会创建线程池外的一个独立线程
+            _dispatchCoroutine = StartCoroutine(CommandDispatcher.Instance.StartDispatch());
         }
 
         private void OnDestroy()
         {
+            StopCoroutine(_dispatchCoroutine);
             //关闭网络服务
             NetworkService.Instance.Close();
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace GameClient.Model
 {
@@ -17,15 +18,15 @@ namespace GameClient.Model
         public int MaxHealth { get; set; }
         public int Price { get; set; }
         public string Intro { get; set; }
-        public int Health
-        {
-            get => _health;
-            set => _health = _health < 0 ? 0 : _health > MaxHealth ? MaxHealth : value;
-        }
 
-        // TODO: 添加位置信息,控制状态属性...
-
-        private int _health;
+        public Vector3 VehiclePosition { get; set; }
+        public Quaternion VehicleRotation { get; set; }
+        public Quaternion TurretRotation { get; set; }
+        public float MoveInputValue { get; set; }
+        public float TurnInputValue { get; set; }
+        public Vector3 FireTransformPosition { get; set; }
+        public Quaternion FireTransformRotation { get; set; }
+        public Vector3 FireForce { get; set; }
 
         public VehicleVO(string vehicleID, string vehicleName, VehicleType vehicleType, float attack, float motility, float defend, int maxHealth, int price, string intro)
         {
@@ -36,7 +37,6 @@ namespace GameClient.Model
             Motility = motility;
             Defend = defend;
             MaxHealth = maxHealth;
-            Health = MaxHealth;
             Price = price;
             Intro = intro;
         }

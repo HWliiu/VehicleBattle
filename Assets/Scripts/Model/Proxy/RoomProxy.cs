@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace GameClient.Model
 {
@@ -28,6 +29,7 @@ namespace GameClient.Model
             _kickPlayerInterceptor = new RequestInterceptor(1f);
             _kickPlayerInterceptor.OnRequestStateChange += (info) => SendNotification(NotifyConsts.RoomNotification.KickPlayerResult, Tuple.Create<bool, string, string, List<PlayerVO>>(false, info, null, null), null);
             _startGameInterceptor = new RequestInterceptor(1f);
+            _startGameInterceptor.OnRequestStateChange += (info) => SendNotification(NotifyConsts.RoomNotification.StartGameResult, Tuple.Create(false, info), null);
         }
 
         public void RequestExitRoom()
@@ -192,6 +194,7 @@ namespace GameClient.Model
             string info = (string)jsonData.SelectToken("Paras.Info");
             if (result == NotifyConsts.CommonNotification.Succeed)
             {
+                PlayerManager.Instance.PlayerOrder = jsonData.SelectTokens("Paras.PlayerOrder").Children().Select(t => (string)t).ToArray();
                 SendNotification(NotifyConsts.RoomNotification.StartGameResult, Tuple.Create(true, info), null);
             }
             else
@@ -313,13 +316,22 @@ namespace GameClient.Model
 
         public override void OnRegister()
         {
-            base.OnRegister();
             _localPlayer = PlayerManager.Instance.LocalPlayer;
+
+            CommandDispatcher.Instance.CommandDict.Add(NotifyConsts.RoomNotification.ExitRoomResult, ExitRoomResult);
+            CommandDispatcher.Instance.CommandDict.Add(NotifyConsts.RoomNotification.ChangePrepareStateResult, ChangePrepareStateResult);
+            CommandDispatcher.Instance.CommandDict.Add(NotifyConsts.RoomNotification.StartGameResult, StartGameResult);
+            CommandDispatcher.Instance.CommandDict.Add(NotifyConsts.RoomNotification.KickPlayerResult, KickPlayerResult);
+            CommandDispatcher.Instance.CommandDict.Add(NotifyConsts.RoomNotification.SendMessageResult, SendMessageResult);
         }
 
         public override void OnRemove()
         {
-            base.OnRemove();
+            CommandDispatcher.Instance.CommandDict.Remove(NotifyConsts.RoomNotification.ExitRoomResult);
+            CommandDispatcher.Instance.CommandDict.Remove(NotifyConsts.RoomNotification.ChangePrepareStateResult);
+            CommandDispatcher.Instance.CommandDict.Remove(NotifyConsts.RoomNotification.StartGameResult);
+            CommandDispatcher.Instance.CommandDict.Remove(NotifyConsts.RoomNotification.KickPlayerResult);
+            CommandDispatcher.Instance.CommandDict.Remove(NotifyConsts.RoomNotification.SendMessageResult);
         }
     }
 }

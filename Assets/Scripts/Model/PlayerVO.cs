@@ -1,8 +1,10 @@
-﻿using System;
+﻿using GameClient.Controller;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace GameClient.Model
 {
@@ -18,15 +20,23 @@ namespace GameClient.Model
 
         public readonly string UserID;
         public readonly string UserName;
+
         public int Level { get; set; }
         public bool PrepareState { get; set; }
-        //public Team Team { get; set; }
+        public int Health
+        {
+            get => _health;
+            set
+            {
+                if (_health != value)
+                {
+                    _health = _health < 0 ? 0 : _health > CurVehicle.MaxHealth ? CurVehicle.MaxHealth : value;
+                    AppFacade.Instance.SendNotification(NotifyConsts.BattleNotification.UpdateHealthState, this, null);
+                }
+            }
+        }
+        private int _health;
         public VehicleVO CurVehicle { get; set; }
+        public VehicleController VehicleController { get; set; }
     }
-    //public enum Team
-    //{
-    //    None,
-    //    Red,
-    //    Blue
-    //}
 }

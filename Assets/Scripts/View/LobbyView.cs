@@ -77,7 +77,7 @@ namespace GameClient.View
 
             AppFacade.Instance.RegisterMediator(new LobbyMediator(nameof(LobbyMediator), this));
 
-            _roomItemPrefab = Resources.Load<GameObject>("Prefab/RoomItem");
+            _roomItemPrefab = Resources.Load<GameObject>("Prefabs/RoomItem");
         }
 
         private void OnDestroy() => AppFacade.Instance.RemoveMediator(nameof(LobbyMediator));
@@ -89,7 +89,7 @@ namespace GameClient.View
             LP_SearchRoomBtn = UnityUtil.FindChild<Button>(LobbyPanel.transform, nameof(LP_SearchRoomBtn)) ?? throw new ArgumentNullException(nameof(LP_SearchRoomBtn));
 
             LP_BackMainMenuBtn.onClick.AddListener(() => UnityUtil.LoadScene(NotifyConsts.SceneName.MainMenuScene));
-            LP_CreateRoomBtn.onClick.AddListener(() => CreateRoomPanel.gameObject.SetActive(true));
+            LP_CreateRoomBtn.onClick.AddListener(() => { CreateRoomPanel.gameObject.SetActive(true); SelectRoomMode = RoomMode.SingleMode; });
             LP_SearchRoomBtn.onClick.AddListener(() => SearchRoomPanel.gameObject.SetActive(true));
         }
         private void InitRoomListPanel()
@@ -140,6 +140,9 @@ namespace GameClient.View
                         break;
                 }
             });
+            CR_SingleModeToggle.isOn = true;
+            SelectRoomMode = RoomMode.SingleMode;
+            CR_MapDropdown.value = 0;
             SelectRoomMap = RoomMap.Map1;
         }
         private void InitSearchRoomPanel()

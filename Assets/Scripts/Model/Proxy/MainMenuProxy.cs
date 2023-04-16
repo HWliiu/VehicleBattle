@@ -23,13 +23,13 @@ namespace GameClient.Model
 
         public override void OnRegister()
         {
-            base.OnRegister();
             _localPlayer = PlayerManager.Instance.LocalPlayer;
+            CommandDispatcher.Instance.CommandDict.Add(NotifyConsts.MainMenuNotification.ChangePasswordResult, ChangePasswordResult);
         }
 
         public override void OnRemove()
         {
-            base.OnRemove();
+            CommandDispatcher.Instance.CommandDict.Remove(NotifyConsts.MainMenuNotification.ChangePasswordResult);
         }
 
         public void RequestChangePassword(string oldPassword, string newPassword)

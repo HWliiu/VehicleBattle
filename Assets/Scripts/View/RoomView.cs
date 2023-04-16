@@ -144,8 +144,8 @@ namespace GameClient.View
             InitDialogPanel();
 
             AppFacade.Instance.RegisterMediator(new RoomMediator(nameof(RoomMediator), this));
-            _playerItemPrefab = Resources.Load<GameObject>("Prefab/PlayerItem");
-            _messageBarPrefab = Resources.Load<GameObject>("Prefab/MessageBar");
+            _playerItemPrefab = Resources.Load<GameObject>("Prefabs/PlayerItem");
+            _messageBarPrefab = Resources.Load<GameObject>("Prefabs/MessageBar");
             _playerManagerInstance = PlayerManager.Instance;
         }
 

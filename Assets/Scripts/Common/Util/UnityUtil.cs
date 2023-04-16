@@ -10,15 +10,14 @@ namespace GameClient.Common
 {
     public class UnityUtil : MonoBehaviour
     {
-        public IEnumerator DelayExecute(float delayTime, Action action)
+        public void DelayExecute(float delayTime, Action action)
         {
-            yield return new WaitForSeconds(delayTime);
-            action();
-        }
-        public IEnumerator DelayExecute(float delayTime, Action<string> action, string state)
-        {
-            yield return new WaitForSeconds(delayTime);
-            action(state);
+            StartCoroutine(enumerator());
+            IEnumerator enumerator()
+            {
+                yield return new WaitForSeconds(delayTime);
+                action();
+            }
         }
         public static void LoadScene(string sceneName)
         {
